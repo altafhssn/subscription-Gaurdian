@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=400">
+  <title>Subscription Guardian</title>
+  <style>
+    :root {
+      --primary: #6C5CE7;
+      --primary-dark: #5A4BD1;
+      --bg: #0F0F1A;
+      --card: #1A1A2E;
+      --card-hover: #222240;
+      --text: #E8E8F0;
+      --text-dim: #8888A0;
+      --green: #00D68F;
+      --red: #FF6B6B;
+      --orange: #FFA726;
+      --border: #2A2A44;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 400px;
+      min-height: 500px;
+    }
+    .container { padding: 16px; }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .logo span { color: var(--text); }
+    .badge {
+      font-size: 10px;
+      background: var(--primary);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    /* States */
+    .state {
+      display: none;
+      text-align: center;
+      padding: 40px 16px;
+    }
+    .state.active { display: block; }
+    .state-icon { font-size: 48px; margin-bottom: 16px; }
+    .state-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .state-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.5; }
+    
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: var(--card-hover); }
+
+    /* Dashboard */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .summary-card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+    .summary-card .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-card .value { font-size: 22px; font-weight: 700; margin-top: 4px; }
+    .summary-card .value.green { color: var(--green); }
+    .summary-card .value.red { color: var(--red); }
+    .summary-card .value.orange { color: var(--orange); }
+
+    .gap-banner {
+      background: linear-gradient(135deg, var(--primary-dark), #2D1B69);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .gap-banner .gap-text { font-size: 24px; font-weight: 700; }
+    .gap-banner .gap-label { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+    /* Sub list */
+    .sub-list { margin-bottom: 16px; }
+    .sub-item {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .sub-item:hover { border-color: var(--primary); }
+    .sub-item .sub-info { flex: 1; }
+    .sub-item .sub-name { font-size: 14px; font-weight: 600; }
+    .sub-item .sub-meta { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .sub-item .sub-amount { font-size: 16px; font-weight: 700; color: var(--green); }
+    .sub-item .unconfirmed { opacity: 0.6; }
+    .sub-item .unconfirmed .sub-name::after { content: " ⚠️"; font-size: 11px; }
+
+    /* Controls */
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    .actions .btn { flex: 1; }
+
+    .status-bar {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .status-bar a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .scan-progress {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">Sub<span>Guard</span></div>
+      <div class="badge" id="statusBadge">Not connected</div>
+    </div>
+
+    <!-- State: Logged Out -->
+    <div class="state active" id="stateLoggedOut">
+      <div class="state-icon">🔐</div>
+      <div class="state-title">Connected?</div>
+      <div class="state-desc">
+        Link your Gmail to find all your forgotten subscriptions.
+        Takes 30 seconds. No spam, just receipts.
+      </div>
+      <button class="btn" id="loginBtn">Connect Gmail</button>
+    </div>
+
+    <!-- State: Loading / Scanning -->
+    <div class="state" id="stateLoading">
+      <div class="state-icon"><span class="loading" style="width:48px;height:48px;border-width:4px;"></span></div>
+      <div class="state-title" id="loadingTitle">Scanning your inbox...</div>
+      <div class="state-desc" id="loadingDesc">Checking emails from the last 90 days.</div>
+    </div>
+
+    <!-- State: Dashboard (subscriptions found) -->
+    <div class="state" id="stateDashboard">
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="label">Monthly Spend</div>
+          <div class="value red" id="monthlySpend">₹0</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Active Subs</div>
+          <div class="value orange" id="activeSubs">0</div>
+        </div>
+      </div>
+
+      <div class="gap-banner" id="gapBanner">
+        <div class="gap-text" id="gapText">₹0</div>
+        <div class="gap-label">more than you think you're spending</div>
+      </div>
+
+      <div class="sub-list" id="subList"></div>
+
+      <div class="actions">
+        <button class="btn" id="rescanBtn">🔄 Rescan</button>
+        <button class="btn btn-secondary" id="openDashboardBtn">📊 Full Dashboard</button>
+      </div>
+    </div>
+
+    <!-- State: No subscriptions found -->
+    <div class="state" id="stateEmpty">
+      <div class="state-icon">🕊️</div>
+      <div class="state-title">Clean inbox!</div>
+      <div class="state-desc">
+        No subscription emails found in your recent inbox.
+        Try scanning more emails or check back later.
+      </div>
+      <button class="btn btn-secondary" id="rescanEmptyBtn">🔄 Scan Again</button>
+    </div>
+
+    <!-- State: Error -->
+    <div class="state" id="stateError">
+      <div class="state-icon">⚠️</div>
+      <div class="state-title">Something went wrong</div>
+      <div class="state-desc" id="errorDesc">Could not connect to the server.</div>
+      <button class="btn" id="retryBtn">Retry</button>
+    </div>
+
+    <div class="status-bar">
+      <span id="userEmail">Not connected</span> · <a href="#" id="logoutLink">Disconnect</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
