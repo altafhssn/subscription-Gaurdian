@@ -41,6 +41,7 @@ async function initDb(pool) {
       encrypted_access_token TEXT,
       encrypted_refresh_token TEXT,
       token_iv TEXT,
+      token_auth_tag TEXT,
       session_token TEXT,
       plan VARCHAR(20) DEFAULT 'free',
       stripe_customer_id VARCHAR(255),
