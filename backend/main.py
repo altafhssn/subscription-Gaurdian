@@ -571,7 +571,8 @@ _SKIP_SENDER_WORDS = frozenset({
     "intl", "acct", "info", "news", "mail", "team", "help",
     "support", "noreply", "notify", "gmail", "students", "student",
     "informa", "billing", "cycle", "prd", "receipt", "invoice",
-    "payment", "no-reply", "donotreply",
+    "payment", "no-reply", "donotreply", "googlesyndication",
+    "googlemail", "googlegroups",
 })
 
 _SKIP_SUBJECT_WORDS = frozenset({
@@ -646,14 +647,19 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     # Known subscription services (only match against no-email text)
     for pattern, info in KNOWN_SUBS:
         if pattern in full_text_no_email:
-            amount, currency = extract_amount(full_text)
+            amount, raw_cur = extract_amount(full_text)
             if not amount and "default_amount" in info:
                 amount     = info["default_amount"]
-                currency   = info.get("currency", "INR")
+                raw_cur    = info.get("currency", "INR")
                 confidence = 0.65
             else:
-                currency   = currency or info.get("currency", "INR")
                 confidence = 0.85 if amount else 0.70
+
+            # Convert USD to INR for known services
+            currency = info.get("currency", raw_cur or "INR")
+            if currency == "USD" and amount:
+                amount = round(amount * _USD_TO_INR, 2)
+                currency = "INR"
 
             frequency = extract_frequency(full_text) or info["frequency"]
             return {
@@ -696,6 +702,10 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     # Sanitise before storage (M3)
     service_name = _strip_html(service_name)[:120]
     if not service_name:
+        return None
+
+    # Filter out junk: amounts < ₹10 are likely one-time charges or tax, not subs
+    if amount is not None and amount < 10 and not frequency:
         return None
 
     return {
