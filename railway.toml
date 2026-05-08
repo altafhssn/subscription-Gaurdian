@@ -1,0 +1,15 @@
+# Subscription Guardian — Railway Configuration
+
+[build]
+  builder = "dockerfile"
+  dockerfilePath = "Dockerfile"
+
+[deploy]
+  healthcheckPath    = "/health"
+  healthcheckTimeout = 30
+  restartPolicyType  = "on_failure"
+
+[deploy.envVars]
+  # Set these in Railway dashboard, NOT here:
+  # GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, APP_SECRET, SESSION_SECRET,
+  # BACKEND_URL, FRONTEND_URL, EXTENSION_ID, DB_PATH

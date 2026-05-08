@@ -1,5 +1,18 @@
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-httpx>=0.25.0
-python-dotenv>=1.0.0
-pydantic>=2.5.0
+# Core
+fastapi>=0.104.0,<0.200.0
+uvicorn[standard]>=0.24.0,<0.30.0
+httpx>=0.25.0,<0.28.0
+python-dotenv>=1.0.0,<2.0.0
+pydantic>=2.5.0,<3.0.0
+
+# Security — token encryption at rest
+cryptography>=41.0.0,<43.0.0
+
+# Session signing
+itsdangerous>=2.1.0,<3.0.0
+
+# Rate limiting
+slowapi>=0.1.9,<0.2.0
+
+# Security headers
+secure>=0.3.0,<1.0.0

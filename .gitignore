@@ -1,7 +1,38 @@
+# Environment — NEVER commit these
+.env
+.env.local
+.env.production
+*.env
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Python
 __pycache__/
 *.pyc
-.env
-subguard.db
-*.db
-node_modules/
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node
+node_modules/
