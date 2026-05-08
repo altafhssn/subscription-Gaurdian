@@ -14,7 +14,8 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import httpx
 import sqlite3
@@ -39,6 +40,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("subguard")
 
 app = FastAPI(title="Subscription Guardian")
+
+# ── Static Files (Frontend) ────────────────────────────
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    """Landing page — redirect to login or show results."""
+    with open("static/success.html") as f:
+        return f.read()
+
+
+@app.get("/auth/success", response_class=HTMLResponse)
+async def auth_success(user_id: str = None, email: str = None):
+    """OAuth success page with scan interface."""
+    with open("static/success.html") as f:
+        html = f.read()
+    return html
 
 app.add_middleware(
     CORSMiddleware,
@@ -163,8 +182,8 @@ async def auth_callback(code: str = None, error: str = None, request: Request = 
     conn.commit()
     conn.close()
 
-    # Redirect to extension with user_id
-    redirect = f"{FRONTEND_URL}/auth/success?user_id={user_id}&email={email}"
+    # Redirect to frontend with user_id
+    redirect = f"{BACKEND_URL}/auth/success?user_id={user_id}&email={email}"
     return RedirectResponse(url=redirect)
 
 
@@ -462,6 +481,65 @@ async def get_user(user_id: str):
     if not user:
         raise HTTPException(404, "User not found")
     return dict(user)
+
+
+@app.get("/api/scan/{user_id}")
+async def start_scan_get(user_id: str):
+    """Scan user's inbox — GET variant for frontend."""
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
+    conn.close()
+
+    if not user:
+        return JSONResponse({"error": "User not found"}, status_code=404)
+
+    access_token = user["access_token"]
+
+    # Check if token needs refresh
+    if user["token_expiry"]:
+        try:
+            token_expiry = datetime.fromisoformat(user["token_expiry"])
+            if datetime.utcnow() > token_expiry and user["refresh_token"]:
+                async with httpx.AsyncClient() as client:
+                    resp = await client.post(
+                        f"{BACKEND_URL}/auth/refresh/{user_id}",
+                    )
+                    if resp.status_code == 200:
+                        access_token = resp.json().get("access_token", access_token)
+        except:
+            pass
+
+    subs = await scan_inbox(user_id, access_token)
+    
+    # Get stats
+    conn = get_db()
+    total_monthly = 0
+    total_yearly = 0
+    for s in subs:
+        amt = s.get("amount") or 0
+        freq = s.get("frequency") or "monthly"
+        if freq == "yearly":
+            total_yearly += amt
+        elif freq == "quarterly":
+            total_yearly += amt * 4
+        elif freq == "weekly":
+            total_yearly += amt * 52
+        else:
+            total_monthly += amt
+    conn.close()
+
+    actual_monthly = total_monthly + (total_yearly / 12)
+    perceived = 500
+    
+    return {
+        "status": "complete",
+        "total_subs": len(subs),
+        "total_monthly_spend": round(actual_monthly, 2),
+        "total_yearly_spend": round(actual_monthly * 12, 2),
+        "estimated_perceived_spend": perceived,
+        "surprise_gap": round(max(0, actual_monthly - perceived), 2),
+        "subscriptions": subs,
+    }
 
 
 @app.post("/api/scan")
