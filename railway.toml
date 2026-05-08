@@ -1,8 +1,9 @@
 # Subscription Guardian — Railway Configuration
+# Note: Root Directory is set to "backend/" in Railway service settings
 
 [build]
   builder = "nixpacks"
-  buildCommand = "cd backend && pip install -r requirements.txt"
+  buildCommand = "pip install -r requirements.txt"
 
-[run]
-  command = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+[service]
+  startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT"
