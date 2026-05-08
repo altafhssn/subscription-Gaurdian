@@ -578,12 +578,14 @@ _SKIP_SENDER_WORDS = frozenset({
 _SKIP_SUBJECT_WORDS = frozenset({
     "your", "re:", "fwd:", "the", "change", "in", "of",
     "to", "for", "a", "an", "is", "was", "has", "have",
+    "hi", "hello", "hey",
 })
 
 _BAD_SUBJECT_KW = frozenset({
     "billing", "cycle", "receipt", "invoice", "payment",
     "subscription", "prd", "order", "confirmation",
-    "update", "notification", "monthly", "annual",
+    "update", "notification", "monthly", "annual", "yearly",
+    "daily", "weekly", "quarterly", "from",
 })
 
 
@@ -681,9 +683,19 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     frequency        = extract_frequency(full_text)
     next_billing     = extract_next_billing(full_text)
 
-    # Infer name from sender domain (M2 cleanup — no personal name patterns)
-    name_match   = re.search(r'@([\w\-]+)\.', sender)
-    service_name = name_match.group(1).title() if name_match else ""
+    # Infer name from sender domain — skip human email senders (e.g. "altaf Hussain <altaf@...>")
+    domain_match = re.search(r'@([\w\-]+)\.', sender)
+    service_name = domain_match.group(1).title() if domain_match else ""
+    
+    # If sender has a display name before the email (e.g. "Altaf Hussain <altaf@gmail.com>"),
+    # check if it looks like a person rather than a service
+    display_name_match = re.match(r'^([^<]+)', sender)
+    if display_name_match:
+        raw_name = display_name_match.group(1).strip()
+        # If the raw name has more than 2 words or has commas, it's likely a human name
+        if raw_name and (len(raw_name.split()) > 2 or ',' in raw_name):
+            # Don't use this as a service name, fall through to subject detection
+            service_name = ""
 
     if not service_name or service_name.lower() in _SKIP_SENDER_WORDS:
         subj_words  = subject.split()
