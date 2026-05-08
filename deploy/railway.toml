@@ -1,5 +1,4 @@
-# Subscription Guardian — Deployment Configuration
-# Deploy to Railway: https://railway.app
+# Subscription Guardian — Railway Configuration (Python FastAPI + SQLite)
 
 [build]
   builder = "nixpacks"
@@ -7,3 +6,7 @@
 
 [run]
   command = "uvicorn main:app --host 0.0.0.0 --port $PORT"
+
+[deploy]
+  # SQLite volume for persistent storage
+  volumeMounts = [{ name = "data", mountPath = "/app" }]

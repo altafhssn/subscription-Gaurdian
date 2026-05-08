@@ -5,3 +5,7 @@ subguard.db
 *.db
 node_modules/
 .DS_Store
+GTM_*.md
+GTM_*.html
+GTM_*.pdf
+VEGAPUNK_*.md
