@@ -1,4 +1,5 @@
-# Subscription Guardian — Railway Configuration (Python FastAPI + SQLite)
+# Subscription Guardian — Railway Configuration
+# Set Root Directory to "backend/" in Railway service settings
 
 [build]
   builder = "nixpacks"
@@ -6,7 +7,3 @@
 
 [run]
   command = "uvicorn main:app --host 0.0.0.0 --port $PORT"
-
-[deploy]
-  # SQLite volume for persistent storage
-  volumeMounts = [{ name = "data", mountPath = "/app" }]

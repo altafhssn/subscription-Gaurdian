@@ -1,13 +1,14 @@
-# Subscription Guardian — Dockerfile (Python FastAPI + SQLite)
+# Subscription Guardian — Dockerfile
+# Deploy via Railway or any container host
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy backend files
-COPY backend/requirements.txt .
+# Copy everything in deploy/
+COPY . .
+
+# Install deps
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/ .
-
-# Railway provides $PORT
+# Railway passes $PORT, fallback to 8000
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
