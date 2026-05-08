@@ -33,7 +33,7 @@ APP_SECRET = os.getenv("APP_SECRET", "dev-secret-change-me")
 SESSION_SECRET = os.getenv("SESSION_SECRET", "dev-session-secret")
 
 DB_PATH = "subguard.db"
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/userinfo.email"]
 REDIRECT_URI = f"{BACKEND_URL}/auth/callback"
 
 logging.basicConfig(level=logging.INFO)
