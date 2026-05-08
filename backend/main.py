@@ -388,6 +388,24 @@ async def get_gmail_service(access_token: str):
     return client
 
 
+def extract_body_text(payload: dict) -> str:
+    """Recursively extract text from email payload parts."""
+    texts = []
+
+    if payload.get("mimeType") == "text/plain" and payload.get("body", {}).get("data"):
+        try:
+            decoded = base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8", errors="ignore")
+            texts.append(decoded)
+        except:
+            pass
+
+    # Handle multipart messages
+    for part in payload.get("parts", []):
+        texts.append(extract_body_text(part))
+
+    return "\n".join(t for t in texts if t)
+
+
 async def scan_inbox(user_id: str, access_token: str, max_results: int = 200):
     """
     Scan recent inbox emails for subscription-related messages.
@@ -413,7 +431,7 @@ async def scan_inbox(user_id: str, access_token: str, max_results: int = 200):
 
         for msg in messages[:100]:  # Process first 100 to stay within rate limits
             msg_id = msg["id"]
-            resp = await gmail.get(f"/users/me/messages/{msg_id}", params={"format": "metadata"})
+            resp = await gmail.get(f"/users/me/messages/{msg_id}", params={"format": "full"})
             msg_data = resp.json()
 
             headers = {h["name"].lower(): h["value"] for h in msg_data.get("payload", {}).get("headers", [])}
@@ -421,7 +439,11 @@ async def scan_inbox(user_id: str, access_token: str, max_results: int = 200):
             sender = headers.get("from", "")
             snippet = msg_data.get("snippet", "")
 
-            result = identify_subscription(subject, sender, snippet)
+            # Extract full body text for better amount detection
+            body_text = extract_body_text(msg_data.get("payload", {}))
+            full_text = f"{subject}\n{sender}\n{snippet}\n{body_text}"
+
+            result = identify_subscription(subject, sender, full_text)
             if result:
                 result["source_email_id"] = msg_id
                 subs_found.append(result)
