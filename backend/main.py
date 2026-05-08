@@ -41,6 +41,14 @@ logger = logging.getLogger("subguard")
 
 app = FastAPI(title="Subscription Guardian")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL, "chrome-extension://*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # ── Static Files (Frontend) ────────────────────────────
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -58,14 +66,6 @@ async def auth_success(user_id: str = None, email: str = None):
     with open("static/success.html") as f:
         html = f.read()
     return html
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "chrome-extension://*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # ── Database ────────────────────────────────────────────
 
@@ -259,7 +259,14 @@ KNOWN_SUBS = {
     "slack": {"category": "Productivity", "frequency": "monthly"},
     "microsoft 365": {"category": "Productivity", "frequency": "yearly"},
     "office 365": {"category": "Productivity", "frequency": "yearly"},
+    "google one": {"category": "Cloud", "frequency": "monthly"},
     "google workspace": {"category": "Productivity", "frequency": "monthly"},
+    "youtube": {"category": "Entertainment", "frequency": "monthly"},
+    "netflix": {"category": "Entertainment", "frequency": "monthly"},
+    "apple music": {"category": "Music", "frequency": "monthly"},
+    "apple tv": {"category": "Entertainment", "frequency": "monthly"},
+    "apple arcade": {"category": "Gaming", "frequency": "monthly"},
+    "prime video": {"category": "Entertainment", "frequency": "monthly"},
     "swiggy one": {"category": "Food", "frequency": "monthly"},
     "zomato pro": {"category": "Food", "frequency": "monthly"},
     "zepto pass": {"category": "Shopping", "frequency": "monthly"},
@@ -366,6 +373,17 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
         name_match = re.search(r'@([\w-]+)\.', sender)
         service_name = name_match.group(1).title() if name_match else "Unknown Service"
 
+        # Skip bad generic names (too short or meaningless)
+        BAD_NAMES = {"Intl", "Acct", "Info", "Info", "News", "Mail", "Team", "Help", "Support", "NoReply", "Noreply", "Notify"}
+        skip_words = {"intl", "acct", "info", "news", "mail", "team", "help", "support", "noreply", "notify"}
+        if service_name.lower() in skip_words:
+            # Try to get a better name from the subject
+            subj_words = subject.split()
+            if len(subj_words) >= 2:
+                service_name = " ".join(subj_words[:2]).title()
+            else:
+                service_name = "Unknown Service"
+
         return {
             "name": service_name,
             "amount": amount,
@@ -449,6 +467,21 @@ async def scan_inbox(user_id: str, access_token: str, max_results: int = 200):
                 subs_found.append(result)
 
             emails_processed += 1
+
+        # Deduplicate: keep best (highest confidence, then highest amount) per name
+        seen = {}
+        for sub in subs_found:
+            name = sub["name"].lower()
+            if name not in seen:
+                seen[name] = sub
+            else:
+                # Prefer the one with amount
+                if sub["amount"] and not seen[name]["amount"]:
+                    seen[name] = sub
+                # Or higher confidence
+                elif sub["confidence"] > seen[name]["confidence"]:
+                    seen[name] = sub
+        subs_found = list(seen.values())
 
         # Log scan
         conn = get_db()
