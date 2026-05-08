@@ -239,6 +239,8 @@ KNOWN_SUBS = [
     ("youtube music", {"display_name": "YouTube Music", "category": "Music", "frequency": "monthly", "currency": "INR"}),
     ("netflix", {"display_name": "Netflix", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
     ("google one", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
+    ("google storage", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
+    ("google drive", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
     ("google workspace", {"display_name": "Google Workspace", "category": "Productivity", "frequency": "monthly", "currency": "INR"}),
     ("spotify", {"display_name": "Spotify", "category": "Music", "frequency": "monthly", "currency": "INR"}),
     ("midjourney", {"display_name": "Midjourney", "category": "AI", "frequency": "monthly", "currency": "USD"}),
@@ -339,6 +341,10 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     """
     full_text = f"{subject}\n{sender}\n{snippet}".lower()
 
+    # Filter out the app's own emails
+    if "subscription guardian" in full_text.lower() or "subguard" in full_text.lower():
+        return None
+
     # Exclude false positives from email addresses containing service names
     full_text_no_email = re.sub(r'[\w.-]+@[\w.-]+\.\w+', '', full_text)
 
@@ -377,17 +383,23 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
 
         # Skip bad generic names (too short or meaningless)
         skip_words = {"intl", "acct", "info", "news", "mail", "team", "help", "support", "noreply", "notify", "gmail", "students", "student", "informa"}
-        if service_name.lower() in skip_words:
+        # Also skip names that look like human names (2 words, capitalised)
+        skip_if_subject_fragment = {"altaf", "billing", "cycle", "prd", "receipt", "invoice", "payment"}
+        
+        if service_name.lower() in skip_words or service_name.lower() in skip_if_subject_fragment:
             # Try to get a better name from the subject
             subj_words = subject.split()
             # Remove common prefixes like "Your", "Re:", "Fwd:"
-            clean_words = [w for w in subj_words if w.lower() not in {"your", "re:", "fwd:", "the", "change", "in"}]
+            clean_words = [w for w in subj_words if w.lower() not in {"your", "re:", "fwd:", "the", "change", "in", "of", "to", "for", "a", "an"}]
+            # Filter out subject-only fragments that aren't service names
+            bad_subject_kw = {"billing", "cycle", "receipt", "invoice", "payment", "subscription", "prd", "order", "confirmation", "update", "notification"}
+            clean_words = [w for w in clean_words if w.lower() not in bad_subject_kw]
             if len(clean_words) >= 2:
                 service_name = " ".join(clean_words[:2]).title()
-            elif clean_words:
+            elif clean_words and clean_words[0].lower() not in skip_words:
                 service_name = clean_words[0].title()
             else:
-                service_name = "Unknown Service"
+                return None  # Skip this email entirely, not useful
 
         return {
             "name": service_name,
