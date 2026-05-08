@@ -235,14 +235,14 @@ SUBSCRIPTION_KEYWORDS = [
 
 # Known subscription services (name patterns) — first match wins, ordered by specificity
 KNOWN_SUBS = [
-    ("youtube premium", {"display_name": "YouTube Premium", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("youtube premium", {"display_name": "YouTube Premium", "category": "Entertainment", "frequency": "monthly", "currency": "INR", "default_amount": 299}),
     ("youtube music", {"display_name": "YouTube Music", "category": "Music", "frequency": "monthly", "currency": "INR"}),
-    ("netflix", {"display_name": "Netflix", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
-    ("google one", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
+    ("netflix", {"display_name": "Netflix", "category": "Entertainment", "frequency": "monthly", "currency": "INR", "default_amount": 149}),
+    ("google one", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR", "default_amount": 130}),
     ("google storage", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
     ("google drive", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
     ("google workspace", {"display_name": "Google Workspace", "category": "Productivity", "frequency": "monthly", "currency": "INR"}),
-    ("spotify", {"display_name": "Spotify", "category": "Music", "frequency": "monthly", "currency": "INR"}),
+    ("spotify", {"display_name": "Spotify", "category": "Music", "frequency": "monthly", "currency": "INR", "default_amount": 119}),
     ("midjourney", {"display_name": "Midjourney", "category": "AI", "frequency": "monthly", "currency": "USD"}),
     ("amazon prime", {"display_name": "Amazon Prime", "category": "Shopping", "frequency": "yearly", "currency": "INR"}),
     ("icloud", {"display_name": "iCloud", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
@@ -352,18 +352,25 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     for pattern, info in KNOWN_SUBS:
         if pattern in full_text_no_email or pattern in full_text:
             amount = extract_amount(full_text)
+            # Fallback to default amount if email doesn't include it
+            if not amount and "default_amount" in info:
+                amount = info["default_amount"]
             frequency = extract_frequency(full_text) or info["frequency"]
             currency = info.get("currency", "INR")
             # Convert USD to INR for Midjourney and other USD services
             if currency == "USD" and amount:
                 amount = round(amount * 83, 2)  # ~83 INR per USD
+            confidence = 0.85 if amount else 0.7
+            # Boost confidence if we used default amount
+            if "default_amount" in info and not extract_amount(full_text):
+                confidence = 0.65  # Lower confidence since we guessed the amount
             return {
                 "name": info["display_name"],
                 "amount": amount,
                 "category": info["category"],
                 "frequency": frequency,
                 "currency": currency,
-                "confidence": 0.85 if amount else 0.7,
+                "confidence": confidence,
             }
 
     # Generic subscription keyword detection
