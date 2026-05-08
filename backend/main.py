@@ -233,45 +233,39 @@ SUBSCRIPTION_KEYWORDS = [
     "upi mandate", "standing instruction",
 ]
 
-# Known subscription services (name patterns)
-KNOWN_SUBS = {
-    "netflix": {"category": "Entertainment", "frequency": "monthly"},
-    "spotify": {"category": "Music", "frequency": "monthly"},
-    "amazon prime": {"category": "Shopping", "frequency": "yearly"},
-    "youtube premium": {"category": "Entertainment", "frequency": "monthly"},
-    "youtube music": {"category": "Music", "frequency": "monthly"},
-    "google one": {"category": "Cloud", "frequency": "monthly"},
-    "icloud": {"category": "Cloud", "frequency": "monthly"},
-    "dropbox": {"category": "Cloud", "frequency": "monthly"},
-    "disney+": {"category": "Entertainment", "frequency": "monthly"},
-    "hotstar": {"category": "Entertainment", "frequency": "monthly"},
-    "sonyliv": {"category": "Entertainment", "frequency": "monthly"},
-    "zee5": {"category": "Entertainment", "frequency": "monthly"},
-    "canva pro": {"category": "Design", "frequency": "monthly"},
-    "figma": {"category": "Design", "frequency": "yearly"},
-    "adobe": {"category": "Design", "frequency": "monthly"},
-    "chatgpt plus": {"category": "AI", "frequency": "monthly"},
-    "chatgpt": {"category": "AI", "frequency": "monthly"},
-    "midjourney": {"category": "AI", "frequency": "monthly"},
-    "notion": {"category": "Productivity", "frequency": "monthly"},
-    "github copilot": {"category": "Development", "frequency": "monthly"},
-    "github": {"category": "Development", "frequency": "monthly"},
-    "slack": {"category": "Productivity", "frequency": "monthly"},
-    "microsoft 365": {"category": "Productivity", "frequency": "yearly"},
-    "office 365": {"category": "Productivity", "frequency": "yearly"},
-    "google one": {"category": "Cloud", "frequency": "monthly"},
-    "google workspace": {"category": "Productivity", "frequency": "monthly"},
-    "youtube": {"category": "Entertainment", "frequency": "monthly"},
-    "netflix": {"category": "Entertainment", "frequency": "monthly"},
-    "apple music": {"category": "Music", "frequency": "monthly"},
-    "apple tv": {"category": "Entertainment", "frequency": "monthly"},
-    "apple arcade": {"category": "Gaming", "frequency": "monthly"},
-    "prime video": {"category": "Entertainment", "frequency": "monthly"},
-    "swiggy one": {"category": "Food", "frequency": "monthly"},
-    "zomato pro": {"category": "Food", "frequency": "monthly"},
-    "zepto pass": {"category": "Shopping", "frequency": "monthly"},
-    "blinkit": {"category": "Shopping", "frequency": "monthly"},
-}
+# Known subscription services (name patterns) — first match wins, ordered by specificity
+KNOWN_SUBS = [
+    ("youtube premium", {"display_name": "YouTube Premium", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("youtube music", {"display_name": "YouTube Music", "category": "Music", "frequency": "monthly", "currency": "INR"}),
+    ("netflix", {"display_name": "Netflix", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("google one", {"display_name": "Google One", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
+    ("google workspace", {"display_name": "Google Workspace", "category": "Productivity", "frequency": "monthly", "currency": "INR"}),
+    ("spotify", {"display_name": "Spotify", "category": "Music", "frequency": "monthly", "currency": "INR"}),
+    ("midjourney", {"display_name": "Midjourney", "category": "AI", "frequency": "monthly", "currency": "USD"}),
+    ("amazon prime", {"display_name": "Amazon Prime", "category": "Shopping", "frequency": "yearly", "currency": "INR"}),
+    ("icloud", {"display_name": "iCloud", "category": "Cloud", "frequency": "monthly", "currency": "INR"}),
+    ("dropbox", {"display_name": "Dropbox", "category": "Cloud", "frequency": "monthly", "currency": "USD"}),
+    ("hotstar", {"display_name": "Hotstar", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("canva", {"display_name": "Canva", "category": "Design", "frequency": "monthly", "currency": "USD"}),
+    ("figma", {"display_name": "Figma", "category": "Design", "frequency": "yearly", "currency": "USD"}),
+    ("adobe", {"display_name": "Adobe", "category": "Design", "frequency": "monthly", "currency": "USD"}),
+    ("chatgpt", {"display_name": "ChatGPT", "category": "AI", "frequency": "monthly", "currency": "USD"}),
+    ("notion", {"display_name": "Notion", "category": "Productivity", "frequency": "monthly", "currency": "USD"}),
+    ("github", {"display_name": "GitHub", "category": "Development", "frequency": "monthly", "currency": "USD"}),
+    ("slack", {"display_name": "Slack", "category": "Productivity", "frequency": "monthly", "currency": "USD"}),
+    ("microsoft 365", {"display_name": "Microsoft 365", "category": "Productivity", "frequency": "yearly", "currency": "INR"}),
+    ("apple music", {"display_name": "Apple Music", "category": "Music", "frequency": "monthly", "currency": "INR"}),
+    ("apple tv", {"display_name": "Apple TV+", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("swiggy one", {"display_name": "Swiggy One", "category": "Food", "frequency": "monthly", "currency": "INR"}),
+    ("zomato pro", {"display_name": "Zomato Pro", "category": "Food", "frequency": "monthly", "currency": "INR"}),
+    ("zepto pass", {"display_name": "Zepto Pass", "category": "Shopping", "frequency": "monthly", "currency": "INR"}),
+    ("blinkit", {"display_name": "Blinkit", "category": "Shopping", "frequency": "monthly", "currency": "INR"}),
+    # Broader catches (lower priority)
+    ("youtube", {"display_name": "YouTube", "category": "Entertainment", "frequency": "monthly", "currency": "INR"}),
+    ("google", {"display_name": "Google", "category": "Other", "frequency": "monthly", "currency": "INR"}),
+    ("apple", {"display_name": "Apple", "category": "Other", "frequency": "monthly", "currency": "INR"}),
+    ("epic games", {"display_name": "Epic Games", "category": "Gaming", "frequency": "monthly", "currency": "INR"}),
+]
 
 # Amount patterns (Indian + global)
 AMOUNT_PATTERNS = [
@@ -345,16 +339,24 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
     """
     full_text = f"{subject}\n{sender}\n{snippet}".lower()
 
+    # Exclude false positives from email addresses containing service names
+    full_text_no_email = re.sub(r'[\w.-]+@[\w.-]+\.\w+', '', full_text)
+
     # Check for known subscription services first
-    for name, info in KNOWN_SUBS.items():
-        if name in full_text:
+    for pattern, info in KNOWN_SUBS:
+        if pattern in full_text_no_email or pattern in full_text:
             amount = extract_amount(full_text)
             frequency = extract_frequency(full_text) or info["frequency"]
+            currency = info.get("currency", "INR")
+            # Convert USD to INR for Midjourney and other USD services
+            if currency == "USD" and amount:
+                amount = round(amount * 83, 2)  # ~83 INR per USD
             return {
-                "name": name.title(),
+                "name": info["display_name"],
                 "amount": amount,
                 "category": info["category"],
                 "frequency": frequency,
+                "currency": currency,
                 "confidence": 0.85 if amount else 0.7,
             }
 
@@ -374,13 +376,16 @@ def identify_subscription(subject: str, sender: str, snippet: str) -> Optional[d
         service_name = name_match.group(1).title() if name_match else "Unknown Service"
 
         # Skip bad generic names (too short or meaningless)
-        BAD_NAMES = {"Intl", "Acct", "Info", "Info", "News", "Mail", "Team", "Help", "Support", "NoReply", "Noreply", "Notify"}
-        skip_words = {"intl", "acct", "info", "news", "mail", "team", "help", "support", "noreply", "notify"}
+        skip_words = {"intl", "acct", "info", "news", "mail", "team", "help", "support", "noreply", "notify", "gmail", "students", "student", "informa"}
         if service_name.lower() in skip_words:
             # Try to get a better name from the subject
             subj_words = subject.split()
-            if len(subj_words) >= 2:
-                service_name = " ".join(subj_words[:2]).title()
+            # Remove common prefixes like "Your", "Re:", "Fwd:"
+            clean_words = [w for w in subj_words if w.lower() not in {"your", "re:", "fwd:", "the", "change", "in"}]
+            if len(clean_words) >= 2:
+                service_name = " ".join(clean_words[:2]).title()
+            elif clean_words:
+                service_name = clean_words[0].title()
             else:
                 service_name = "Unknown Service"
 
