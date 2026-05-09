@@ -3,509 +3,366 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subscription Guardian — Find & Cancel Forgotten Subscriptions</title>
-  <meta name="description" content="Connect your Gmail. We scan your inbox for subscription receipts and show you what you're actually spending vs what you think. Cancel what you don't need.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Subscription Guardian — Find Forgotten Subscriptions">
-  <meta name="twitter:description" content="We scan your Gmail and show you exactly what you're paying for. Cancel what you don't need.">
+  <title>Subscription Guardian — Find Hidden Subscriptions in Seconds</title>
+  <meta name="description" content="Stop wasting money on forgotten subscriptions. Scan your Gmail, find every subscription, and cancel what you don't need.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ─── Reset & Base ─── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #08080a;
-      color: #e4e4e7;
-      line-height: 1.7;
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: #fafafa;
+      color: #111;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
-
-    :root {
-      --green: #22c55e;
-      --green-dim: rgba(34, 197, 94, 0.12);
-      --green-glow: rgba(34, 197, 94, 0.04);
-      --card: #121214;
-      --border: #1e1e21;
-      --text: #e4e4e7;
-      --muted: #7f7f85;
-      --dim: #3f3f45;
-      --radius: 12px;
-      --radius-sm: 8px;
-    }
-
-    .container { max-width: 900px; margin: 0 auto; padding: 0 28px; }
-    a { text-decoration: none; }
-
-    /* ─── Animations ─── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes ambientMove {
-      0% { transform: translate(0, 0); }
-      50% { transform: translate(30px, -20px); }
-      100% { transform: translate(0, 0); }
-    }
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.3); }
-      50% { box-shadow: 0 0 24px 4px rgba(34, 197, 94, 0.12); }
-    }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateX(-50%) translateY(-24px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes lineGrow {
-      from { transform: scaleX(0); }
-      to { transform: scaleX(1); }
-    }
-    @keyframes numberCount {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* ─── Ambient Background ─── */
-    .bg-ambient {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 0;
-      overflow: hidden;
-    }
-    .bg-ambient .blob {
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.03;
-    }
-    .bg-ambient .blob:nth-child(1) {
-      background: var(--green);
-      top: -200px; left: -100px;
-      animation: ambientMove 30s ease-in-out infinite;
-    }
-    .bg-ambient .blob:nth-child(2) {
-      background: #6366f1;
-      bottom: -200px; right: -200px;
-      animation: ambientMove 25s ease-in-out infinite reverse;
-    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
     /* ─── Nav ─── */
     nav {
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: blur(20px) saturate(1.2);
-      background: rgba(8, 8, 10, 0.7);
-      border-bottom: 1px solid var(--border);
-    }
-    nav .container {
       display: flex; justify-content: space-between; align-items: center;
-      padding-top: 16px; padding-bottom: 16px; max-width: 900px;
+      padding: 16px 24px; max-width: 1100px; margin: 0 auto;
     }
-    .logo {
-      font-family: 'Instrument Serif', serif;
-      font-size: 1.4rem; font-weight: 400;
-      color: var(--green); letter-spacing: -0.02em;
+    .logo { font-weight: 700; font-size: 1.25rem; color: #1a1a2e; text-decoration: none; }
+    .logo span { color: #22c55e; }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .nav-right a {
+      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
     }
-    .logo span { color: var(--text); }
-    .nav-links { display: flex; gap: 8px; align-items: center; }
-    .nav-links a {
-      color: var(--muted); font-size: 0.875rem; font-weight: 500;
-      padding: 8px 16px; border-radius: var(--radius-sm);
+    .nav-right a:hover { background: #f0f0f0; color: #111; }
+    .btn-primary {
+      background: #1a1a2e; color: #fff !important;
+      padding: 10px 20px !important; border-radius: 8px !important;
+      font-weight: 600 !important; font-size: 0.875rem !important;
       transition: all 0.2s;
     }
-    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
-    .nav-cta {
-      background: var(--green); color: #08080a !important; font-weight: 600;
-      padding: 10px 20px !important; border-radius: var(--radius-sm) !important;
+    .btn-primary:hover { background: #2d2d4a !important; transform: translateY(-1px); }
+    .btn-primary.green { background: #22c55e; color: #fff !important; }
+    .btn-primary.green:hover { background: #16a34a !important; }
+
+    .btn-outline {
+      background: transparent; color: #1a1a2e !important;
+      border: 1.5px solid #e0e0e0; padding: 10px 20px !important;
+      border-radius: 8px !important; font-weight: 600 !important;
+      font-size: 0.875rem !important; transition: all 0.2s;
     }
-    .nav-cta:hover { background: #1ea34e !important; color: #08080a !important; }
+    .btn-outline:hover { border-color: #1a1a2e; background: transparent !important; }
+
+    .btn-white {
+      background: #fff !important; color: #1a1a2e !important;
+      border: none; padding: 14px 28px !important;
+      border-radius: 10px !important; font-weight: 600 !important;
+      font-size: 0.95rem !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+    }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
 
     /* ─── Hero ─── */
     .hero {
-      padding: 100px 0 80px;
+      padding: 80px 0 60px;
       text-align: center;
-      position: relative; z-index: 1;
-    }
-    .hero .badge {
-      display: inline-block;
-      background: var(--green-dim);
-      color: var(--green);
-      font-size: 0.75rem; font-weight: 600;
-      padding: 6px 14px; border-radius: 9999px;
-      letter-spacing: 0.04em; text-transform: uppercase;
-      margin-bottom: 20px;
-      animation: fadeUp 0.7s 0.2s both cubic-bezier(0.16, 1, 0.3, 1);
+      background: linear-gradient(180deg, #f0fdf4 0%, #fafafa 100%);
     }
     .hero h1 {
-      font-family: 'Instrument Serif', serif;
-      font-size: 3.5rem; font-weight: 400; line-height: 1.05;
+      font-size: 3rem; font-weight: 800; line-height: 1.15;
       letter-spacing: -0.03em;
-      color: var(--text);
       max-width: 700px; margin: 0 auto;
-      animation: fadeUp 0.7s 0.3s both cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--green);
-    }
+    .hero h1 em { color: #22c55e; font-style: normal; }
     .hero p {
-      font-size: 1.1rem; color: var(--muted);
-      max-width: 520px; margin: 20px auto 36px;
-      line-height: 1.7;
-      animation: fadeUp 0.7s 0.4s both cubic-bezier(0.16, 1, 0.3, 1);
+      font-size: 1.1rem; color: #666;
+      max-width: 520px; margin: 16px auto 32px;
+      line-height: 1.6;
     }
-    .hero-buttons {
-      display: flex; gap: 12px; justify-content: center;
-      animation: fadeUp 0.7s 0.5s both cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .btn-primary {
-      background: var(--green); color: #08080a;
-      font-weight: 600; padding: 14px 32px; border-radius: var(--radius-sm);
-      font-size: 0.95rem; border: none; cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary:hover { background: #1ea34e; transform: scale(0.97); }
-
-    .btn-secondary {
-      background: transparent; color: var(--text);
-      font-weight: 500; padding: 14px 28px; border-radius: var(--radius-sm);
-      font-size: 0.95rem; border: 1px solid var(--border); cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-secondary:hover { background: var(--card); border-color: var(--dim); }
+    .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
     .hero-stats {
-      display: flex; justify-content: center; gap: 40px;
-      margin-top: 56px; padding-top: 40px;
-      border-top: 1px solid var(--border);
-      animation: fadeUp 0.7s 0.6s both cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; justify-content: center; gap: 48px;
+      margin-top: 56px; padding: 32px 0;
+      border-top: 1px solid #e8e8e8;
+      flex-wrap: wrap;
     }
-    .hero-stats .stat { text-align: center; }
     .hero-stats .stat .num {
-      font-family: 'Instrument Serif', serif;
-      font-size: 2rem; color: var(--text);
+      font-size: 1.8rem; font-weight: 800; color: #1a1a2e;
     }
     .hero-stats .stat .label {
-      font-size: 0.85rem; color: var(--muted); margin-top: 2px;
+      font-size: 0.85rem; color: #888; margin-top: 2px;
     }
 
-    /* ─── Section Common ─── */
-    section {
-      position: relative; z-index: 1;
-      padding: 100px 0;
+    /* ─── Dashboard Preview ─── */
+    .dashboard-preview {
+      padding: 40px 0 80px;
+      background: #fafafa;
     }
-    .section-label {
-      display: inline-block;
-      font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; color: var(--muted);
+    .dashboard-preview .mockup {
+      max-width: 900px; margin: 0 auto;
+      background: #fff; border-radius: 16px;
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .mockup-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 20px;
+      background: #f8f8f8;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .mockup-header .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .mockup-header .dot:nth-child(1) { background: #ff5f57; }
+    .mockup-header .dot:nth-child(2) { background: #ffbd2e; }
+    .mockup-header .dot:nth-child(3) { background: #28c840; }
+    .mockup-body { padding: 24px; display: flex; gap: 24px; }
+    .mockup-sidebar {
+      width: 180px; flex-shrink: 0;
+    }
+    .mockup-sidebar .item {
+      padding: 10px 12px; border-radius: 8px;
+      font-size: 0.85rem; color: #888; margin-bottom: 4px;
+    }
+    .mockup-sidebar .item.active {
+      background: #f0fdf4; color: #22c55e; font-weight: 600;
+    }
+    .mockup-main { flex: 1; }
+    .mockup-main .row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .mockup-main .row:last-child { border: none; }
+    .mockup-main .row .name { font-size: 0.9rem; font-weight: 600; color: #333; }
+    .mockup-main .row .amt { font-size: 0.9rem; font-weight: 600; color: #888; }
+    .mockup-main .row .badge {
+      font-size: 0.7rem; font-weight: 600; padding: 3px 8px;
+      border-radius: 4px; background: #f0fdf4; color: #22c55e;
+    }
+    .mockup-main .row .badge.red { background: #fef2f2; color: #ef4444; }
+    .mockup-main .row .badge.orange { background: #fff7ed; color: #f97316; }
+
+    /* ─── Features ─── */
+    section { padding: 80px 0; }
+    section:nth-child(even) { background: #f8f8f8; }
+    .section-title {
+      text-align: center;
+      font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;
       margin-bottom: 12px;
     }
-    .section-title {
-      font-family: 'Instrument Serif', serif;
-      font-size: 2.2rem; font-weight: 400;
-      line-height: 1.15; letter-spacing: -0.02em;
-      color: var(--text);
+    .section-sub {
+      text-align: center; color: #666; font-size: 1rem;
+      max-width: 500px; margin: 0 auto 48px;
     }
-    .section-title em { color: var(--green); font-style: italic; }
 
-    /* ─── How It Works ─── */
-    #how { text-align: center; }
-    #how .section-title { max-width: 500px; margin: 0 auto 12px; }
-    #how .section-sub { color: var(--muted); margin-bottom: 56px; font-size: 1rem; }
-
-    .steps {
+    .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      max-width: 780px; margin: 0 auto;
-    }
-    .step {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px 24px;
-      text-align: left;
-      transition: all 0.3s;
-    }
-    .step:hover {
-      border-color: var(--dim);
-      transform: translateY(-2px);
-    }
-    .step .step-num {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--green-dim); color: var(--green);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; margin-bottom: 16px;
-    }
-    .step h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
-    .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    /* ─── Problem Section ─── */
-    .problem-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 24px;
-      max-width: 780px; margin: 40px auto 0;
     }
-    .problem-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
+    .feature-card {
+      background: #fff; border: 1px solid #e8e8e8;
+      border-radius: 12px; padding: 28px 24px;
+      transition: all 0.2s;
     }
-    .problem-card .icon { font-size: 1.5rem; margin-bottom: 12px; }
-    .problem-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
-    .problem-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    .money-stat {
-      grid-column: 1 / -1;
-      text-align: center;
-      background: var(--green-dim);
-      border: 1px solid rgba(34,197,94,0.15);
-      border-radius: var(--radius);
-      padding: 36px;
+    .feature-card:hover { border-color: #ccc; }
+    .feature-card .icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #f0fdf4; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 14px;
     }
-    .money-stat .big-num {
-      font-family: 'Instrument Serif', serif;
-      font-size: 3rem; color: var(--green);
-    }
-    .money-stat p { color: var(--muted); font-size: 0.9rem; margin-top: 4px; }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .feature-card p { font-size: 0.85rem; color: #888; line-height: 1.6; }
 
     /* ─── Pricing ─── */
-    #pricing { text-align: center; }
-    #pricing .section-title { margin-bottom: 8px; }
-    #pricing .section-sub { color: var(--muted); margin-bottom: 48px; }
-
     .pricing-cards {
       display: flex; gap: 20px; justify-content: center;
       max-width: 600px; margin: 0 auto;
     }
     .pricing-card {
-      flex: 1;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 36px 28px;
-      text-align: left;
-      transition: all 0.3s;
+      flex: 1; background: #fff; border: 1px solid #e8e8e8;
+      border-radius: 12px; padding: 28px 24px;
     }
-    .pricing-card:hover { border-color: var(--dim); }
     .pricing-card.featured {
-      border-color: rgba(34,197,94,0.2);
-      position: relative;
-    }
-    .pricing-card.featured::before {
-      content: 'Most popular';
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-      background: var(--green); color: #08080a;
-      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 4px 16px; border-radius: 9999px;
+      border-color: #22c55e; box-shadow: 0 0 0 1px #22c55e;
     }
     .pricing-card .plan-name {
-      font-size: 0.85rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px;
+      font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: #888; margin-bottom: 8px;
     }
     .pricing-card .plan-price {
-      font-family: 'Instrument Serif', serif;
-      font-size: 2.5rem; color: var(--text); margin-bottom: 4px;
+      font-size: 2rem; font-weight: 800; margin-bottom: 4px;
     }
-    .pricing-card .plan-price span {
-      font-size: 1rem; color: var(--muted);
-    }
-    .pricing-card .plan-desc {
-      font-size: 0.85rem; color: var(--muted); margin-bottom: 20px;
-    }
-    .pricing-card .plan-features {
-      list-style: none; margin-bottom: 24px;
-    }
-    .pricing-card .plan-features li {
-      font-size: 0.85rem; color: var(--muted); padding: 6px 0;
+    .pricing-card .plan-price span { font-size: 1rem; font-weight: 400; color: #888; }
+    .pricing-card .plan-desc { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
+    .pricing-card ul { list-style: none; margin-bottom: 24px; }
+    .pricing-card ul li {
+      font-size: 0.85rem; color: #666; padding: 6px 0;
       display: flex; align-items: center; gap: 8px;
     }
-    .pricing-card .plan-features li::before {
-      content: '';
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--green); flex-shrink: 0;
+    .pricing-card ul li::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: #22c55e; flex-shrink: 0;
     }
     .pricing-card .btn-primary,
-    .pricing-card .btn-secondary {
-      display: block; text-align: center; font-size: 0.9rem; padding: 12px;
+    .pricing-card .btn-outline {
+      display: block; text-align: center; text-decoration: none;
+      padding: 12px !important; font-size: 0.9rem !important;
     }
 
     /* ─── CTA ─── */
     .cta-section {
+      background: #1a1a2e !important; color: #fff;
       text-align: center;
-      padding: 100px 0;
-      border-top: 1px solid var(--border);
     }
-    .cta-section .big-text {
-      font-family: 'Instrument Serif', serif;
-      font-size: 2.2rem; line-height: 1.2;
-      margin-bottom: 24px;
-    }
-    .cta-section .big-text em { color: var(--green); font-style: italic; }
+    .cta-section h2 { color: #fff; }
+    .cta-section p { color: #999; }
 
     /* ─── Footer ─── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 0;
-      text-align: center;
-      position: relative; z-index: 1;
+      padding: 40px 0; text-align: center;
+      border-top: 1px solid #e8e8e8;
     }
-    footer p { font-size: 0.85rem; color: var(--dim); }
-    footer a { color: var(--muted); }
-    footer a:hover { color: var(--text); }
-
-    /* ─── Toast ─── */
-    .toast {
-      display: none;
-      position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
-      background: #166534; color: #fff; padding: 16px 28px;
-      border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 100;
-      border: 1px solid rgba(34,197,94,0.2);
-      animation: slideDown 0.3s ease;
-    }
-    .toast.error { background: #7f1d1d; border-color: rgba(239,68,68,0.2); }
+    footer p { font-size: 0.85rem; color: #888; }
+    footer a { color: #555; text-decoration: none; }
+    footer a:hover { color: #111; }
 
     /* ─── Responsive ─── */
     @media (max-width: 768px) {
-      .hero h1 { font-size: 2.4rem; }
-      .steps { grid-template-columns: 1fr; max-width: 400px; }
-      .problem-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2rem; }
+      .features-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
       .pricing-cards { flex-direction: column; max-width: 340px; }
-      .hero-stats { gap: 24px; flex-wrap: wrap; }
-      .section-title { font-size: 1.8rem; }
-      .money-stat .big-num { font-size: 2.2rem; }
-      nav .container { padding-top: 12px; padding-bottom: 12px; }
-      .nav-links a:not(.nav-cta):not(.nav-home) { display: none; }
-    }
-    @media (max-width: 480px) {
-      .hero h1 { font-size: 1.8rem; }
-      .hero { padding: 60px 0 40px; }
-      section { padding: 60px 0; }
+      .hero-stats { gap: 24px; }
+      .dashboard-preview { display: none; }
+      .mockup-body { flex-direction: column; }
+      .mockup-sidebar { width: 100%; display: flex; gap: 4px; flex-wrap: wrap; }
+      .mockup-sidebar .item { flex: 1; text-align: center; min-width: 80px; }
     }
   </style>
 </head>
 <body>
 
-<div class="bg-ambient">
-  <div class="blob"></div>
-  <div class="blob"></div>
-</div>
-
-<div id="toast" class="toast"></div>
-
 <nav>
-  <div class="container">
-    <a href="index.html" class="logo">Guardian<span>.</span></a>
-    <div class="nav-links">
-      <a href="#how" class="nav-home">How it works</a>
-      <a href="#pricing" class="nav-home">Pricing</a>
-      <a href="signup.html" class="nav-cta">Get early access</a>
-    </div>
+  <a href="index.html" class="logo">Guardian<span>.</span></a>
+  <div class="nav-right">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="signup.html" class="btn-primary">Get early access</a>
   </div>
 </nav>
 
 <!-- ─── Hero ─── -->
 <section class="hero">
   <div class="container">
-    <div class="badge">Early access</div>
-    <h1>You're probably paying for <em>subscriptions you forgot</em> about.</h1>
-    <p>Connect your Gmail, we scan your inbox for subscription receipts, and show you exactly what you're spending. No more surprise charges.</p>
+    <h1>Stop paying for subscriptions <em>you forgot about</em>.</h1>
+    <p>Connect your Gmail. We scan your inbox for subscription receipts and show you exactly what you're spending. No more surprise charges.</p>
     <div class="hero-buttons">
-      <a href="signup.html" class="btn-primary">Find your subscriptions →</a>
-      <a href="#how" class="btn-secondary">How it works</a>
+      <a href="signup.html" class="btn-primary green" style="padding:14px 28px!important;font-size:0.95rem!important;display:inline-block;">Find your subscriptions →</a>
+      <a href="#features" class="btn-outline" style="padding:14px 28px!important;font-size:0.95rem!important;display:inline-block;">See how it works</a>
     </div>
     <div class="hero-stats">
       <div class="stat">
         <div class="num">£219</div>
-        <div class="label">Average monthly UK spend</div>
+        <div class="label">Avg monthly UK spend</div>
       </div>
       <div class="stat">
         <div class="num">68%</div>
-        <div class="label">Can't recall what they pay for</div>
+        <div class="label">Can't recall subscriptions</div>
       </div>
       <div class="stat">
         <div class="num">11</div>
-        <div class="label">Average forgotten subs</div>
+        <div class="label">Forgotten subs per person</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── Problem ─── -->
-<section>
-  <div class="container" style="max-width: 780px;">
-    <div class="reveal">
-      <span class="section-label">The problem</span>
-      <h2 class="section-title">Your subscriptions are <em>bleeding you dry</em>.</h2>
-    </div>
-    <div class="problem-grid">
-      <div class="problem-card reveal">
-        <div class="icon">📬</div>
-        <h4>Receipts buried in your inbox</h4>
-        <p>Subscription confirmations, renewal notices, and price changes hide among hundreds of daily emails. You never see them.</p>
-      </div>
-      <div class="problem-card reveal">
-        <div class="icon">🔄</div>
-        <h4>Free trials that never ended</h4>
-        <p>You signed up for something once. It's been charging you for 14 months. Sound familiar?</p>
-      </div>
-      <div class="problem-card reveal">
-        <div class="icon">📈</div>
-        <h4>Creeping price increases</h4>
-        <p>£5.99 became £7.99 became £9.99. You didn't notice because the email went to spam.</p>
-      </div>
-      <div class="problem-card reveal">
-        <div class="icon">💰</div>
-        <h4>Double paying for overlapping services</h4>
-        <p>Netflix, Disney+, Apple TV, Prime, Paramount, Peacock — how many streaming services are you actually watching?</p>
-      </div>
-      <div class="money-stat reveal">
-        <div class="big-num">£219</div>
-        <p>That's what the average UK household spends on subscriptions per month.<br>Most of them don't know it until they check.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── How It Works ─── -->
-<section id="how">
+<!-- ─── Dashboard Preview ─── -->
+<section class="dashboard-preview">
   <div class="container">
-    <div class="reveal">
-      <span class="section-label">How it works</span>
-      <h2 class="section-title">Three minutes. That's all it takes.</h2>
-      <p class="section-sub">No manual data entry. No spreadsheets. Just connect and see.</p>
+    <div class="mockup">
+      <div class="mockup-header">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span style="font-size:0.8rem;color:#999;margin-left:8px;">Guardian Dashboard</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="item active">Dashboard</div>
+          <div class="item">Subscriptions</div>
+          <div class="item">Insights</div>
+          <div class="item">Settings</div>
+        </div>
+        <div class="mockup-main">
+          <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+            <span style="font-weight:700;font-size:1rem;">Active subscriptions</span>
+            <span style="font-size:0.85rem;color:#888;">Total: £198/mo</span>
+          </div>
+          <div class="row">
+            <div class="name">Slack Pro</div>
+            <span class="badge">Business</span>
+            <div class="amt">£32.00/mo</div>
+          </div>
+          <div class="row">
+            <div class="name">Figma</div>
+            <span class="badge">Business</span>
+            <div class="amt">£24.00/mo</div>
+          </div>
+          <div class="row">
+            <div class="name">Notion Plus</div>
+            <span class="badge">Business</span>
+            <div class="amt">£96.00/mo</div>
+          </div>
+          <div class="row">
+            <div class="name">Netflix Premium</div>
+            <span class="badge orange">Personal</span>
+            <div class="amt">£15.99/mo</div>
+          </div>
+          <div class="row">
+            <div class="name">Zoom Pro (Duplicate)</div>
+            <span class="badge red">Duplicate</span>
+            <div class="amt">£29.99/mo</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="steps">
-      <div class="step reveal">
-        <div class="step-num">01</div>
-        <h3>Connect your Gmail</h3>
-        <p>We use OAuth — read-only access. We cannot send emails or see your personal messages. Only subscription-related receipts.</p>
+  </div>
+</section>
+
+<!-- ─── Features ─── -->
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+    <p class="section-sub">We find every subscription in your inbox and show you exactly what's costing you.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🔍</div>
+        <h3>Automated Detection</h3>
+        <p>Scans your Gmail for subscription receipts, renewal notices, and price changes. Even finds stuff buried in spam.</p>
       </div>
-      <div class="step reveal">
-        <div class="step-num">02</div>
-        <h3>We scan the receipts</h3>
-        <p>Our AI finds every subscription confirmation, renewal notice, and price-change email. Even the ones in spam or buried deep.</p>
+      <div class="feature-card">
+        <div class="icon">💰</div>
+        <h3>AI Savings Insights</h3>
+        <p>Detects duplicates, overlapping services, and plans you're not utilising. Know exactly where to cut.</p>
       </div>
-      <div class="step reveal">
-        <div class="step-num">03</div>
-        <h3>See your real spend</h3>
-        <p>One clean dashboard. What you're paying, what for, and easy one-click cancellation links. Know where your money goes.</p>
+      <div class="feature-card">
+        <div class="icon">🔔</div>
+        <h3>Renewal Alerts</h3>
+        <p>Get notified before every renewal. Never get surprised by a £200 annual charge again.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📊</div>
+        <h3>Unified Dashboard</h3>
+        <p>Every subscription in one place. See your total monthly and annual spend at a glance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🗑️</div>
+        <h3>One-Click Cancellations</h3>
+        <p>Cancel subscriptions directly from the dashboard. No more hunting through settings pages.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📄</div>
+        <h3>CSV Export</h3>
+        <p>Export your full subscription report for accounting, tax purposes, or just peace of mind.</p>
       </div>
     </div>
   </div>
@@ -514,35 +371,32 @@
 <!-- ─── Pricing ─── -->
 <section id="pricing">
   <div class="container">
-    <div class="reveal">
-      <span class="section-label">Pricing</span>
-      <h2 class="section-title">Start free. Upgrade to <em>save more</em>.</h2>
-      <p class="section-sub">No credit card required for the free plan.</p>
-    </div>
+    <h2 class="section-title">Simple pricing. Immediate savings.</h2>
+    <p class="section-sub">Start free. Upgrade when you need to track more.</p>
     <div class="pricing-cards">
-      <div class="pricing-card reveal">
+      <div class="pricing-card">
         <div class="plan-name">Free</div>
         <div class="plan-price">£0 <span>/mo</span></div>
-        <div class="plan-desc">One-time scan, up to 10 subscriptions tracked.</div>
-        <ul class="plan-features">
+        <div class="plan-desc">One-time scan, up to 10 subscriptions.</div>
+        <ul>
           <li>Full Gmail scan</li>
           <li>Subscription dashboard</li>
           <li>Monthly report</li>
         </ul>
-        <a href="signup.html" class="btn-secondary">Get started</a>
+        <a href="signup.html" class="btn-outline">Get started</a>
       </div>
-      <div class="pricing-card featured reveal">
+      <div class="pricing-card featured">
         <div class="plan-name">Guardian</div>
         <div class="plan-price">£3 <span>/mo</span></div>
-        <div class="plan-desc">Unlimited tracking, auto-scan, price alerts.</div>
-        <ul class="plan-features">
+        <div class="plan-desc">Unlimited tracking, auto-scan, alerts.</div>
+        <ul>
           <li>Everything in Free</li>
           <li>Unlimited subscriptions</li>
           <li>Automatic weekly scans</li>
           <li>Price increase alerts</li>
           <li>One-click cancellations</li>
         </ul>
-        <a href="signup.html" class="btn-primary">Start free trial</a>
+        <a href="signup.html" class="btn-primary green" style="text-decoration:none;padding:12px!important;display:block;font-size:0.9rem!important;">Start free trial</a>
       </div>
     </div>
   </div>
@@ -551,10 +405,9 @@
 <!-- ─── CTA ─── -->
 <section class="cta-section">
   <div class="container">
-    <div class="reveal">
-      <div class="big-text">Stop paying for what you don't use.<br><em>Start today.</em></div>
-      <a href="signup.html" class="btn-primary">Get early access →</a>
-    </div>
+    <h2 class="section-title">Ready to stop wasting money?</h2>
+    <p class="section-sub" style="margin-bottom:32px;">Join thousands taking control of their subscriptions.</p>
+    <a href="signup.html" class="btn-white" style="text-decoration:none;display:inline-block;">Get early access →</a>
   </div>
 </section>
 
@@ -562,35 +415,6 @@
   <p>Subscription Guardian &mdash; Built for people who hate wasting money.</p>
   <p style="margin-top: 8px;"><a href="mailto:hello@subscriptionguardian.com">hello@subscriptionguardian.com</a></p>
 </footer>
-
-<script>
-(function() {
-  // Scroll reveals
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-  });
-
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-})();
-</script>
 
 </body>
 </html>
