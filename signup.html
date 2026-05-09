@@ -324,7 +324,7 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     localStorage.setItem('sg_signups', JSON.stringify(signups));
   } catch {}
 
-  // Submit to Vercel API
+  // Submit to API (Vercel or Netlify — same endpoint)
   try {
     await fetch('/api/waitlist', {
       method: 'POST',
