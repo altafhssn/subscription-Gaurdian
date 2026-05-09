@@ -324,9 +324,9 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     localStorage.setItem('sg_signups', JSON.stringify(signups));
   } catch {}
 
-  // Try Railway backend (silent)
+  // Submit to Vercel API
   try {
-    await fetch('https://subguard.up.railway.app/api/waitlist', {
+    await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: data.email, name: data.firstName + ' ' + data.lastName })
