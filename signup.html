@@ -317,23 +317,23 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     password: document.getElementById('password').value
   };
 
-  // Save locally as fallback
+  // Save locally
   try {
     const signups = JSON.parse(localStorage.getItem('sg_signups') || '[]');
     signups.push({ ...data, timestamp: new Date().toISOString() });
     localStorage.setItem('sg_signups', JSON.stringify(signups));
   } catch {}
 
-  // Submit to Railway backend
+  // Try Railway backend (silent)
   try {
-    const res = await fetch('https://subguard.up.railway.app/api/waitlist', {
+    await fetch('https://subguard.up.railway.app/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: data.email, name: data.firstName + ' ' + data.lastName })
     });
   } catch {}
 
-  showToast('🎉 Account created! Check your email to get started.');
+  showToast('🎉 You\'re on the list! We\'ll let you know when we launch.');
   this.reset();
   btn.disabled = false;
   btn.textContent = 'Create Free Account →';
