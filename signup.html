@@ -3,202 +3,294 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subscription Guardian — Sign Up</title>
+  <title>Subscription Guardian — Early Access Sign Up</title>
   <meta name="description" content="Sign up for Subscription Guardian. Find every subscription you're paying for, see your real spend, and cancel what you don't need.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Subscription Guardian — Sign Up for Early Access">
-  <meta name="twitter:description" content="Sign up for Subscription Guardian. Find, track, and cancel forgotten subscriptions.">
+  <meta name="twitter:title" content="Subscription Guardian — Early Access">
+  <meta name="twitter:description" content="We scan your Gmail and show you exactly what you're paying for. Cancel what you don't need.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0b;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #08080a;
       color: #e4e4e7;
-      line-height: 1.6;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; flex: 1; width: 100%; }
 
-    /* ─── Nav ─── */
+    :root {
+      --green: #22c55e;
+      --green-dim: rgba(34, 197, 94, 0.12);
+      --card: #121214;
+      --border: #1e1e21;
+      --text: #e4e4e7;
+      --muted: #7f7f85;
+      --dim: #3f3f45;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 28px; flex: 1; width: 100%; }
+    a { text-decoration: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-24px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes ambientMove {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -20px); }
+      100% { transform: translate(0, 0); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.2); }
+      50% { box-shadow: 0 0 20px 3px rgba(34, 197, 94, 0.08); }
+    }
+
+    .bg-ambient {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .bg-ambient .blob {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.025;
+    }
+    .bg-ambient .blob:nth-child(1) {
+      background: var(--green);
+      top: -150px; right: -100px;
+      animation: ambientMove 30s ease-in-out infinite;
+    }
+    .bg-ambient .blob:nth-child(2) {
+      background: #6366f1;
+      bottom: -150px; left: -100px;
+      animation: ambientMove 25s ease-in-out infinite reverse;
+    }
+
     nav {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(20px) saturate(1.2);
+      background: rgba(8, 8, 10, 0.7);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 24px; max-width: 720px; margin: 0 auto; width: 100%;
+      padding-top: 16px; padding-bottom: 16px; max-width: 900px;
     }
-    .logo { font-weight: 700; font-size: 1.2rem; color: #22c55e; letter-spacing: -0.5px; text-decoration: none; }
-    .logo span { color: #e4e4e7; }
-    .nav-links { display: flex; gap: 24px; align-items: center; }
-    .nav-links a { color: #a1a1aa; text-decoration: none; font-size: 0.9rem; }
-    .nav-links a:hover { color: #e4e4e7; }
-    .nav-cta {
-      padding: 10px 20px; border-radius: 8px; background: #22c55e; color: #0a0a0b !important;
-      font-weight: 600; font-size: 0.85rem;
+    .logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.4rem; font-weight: 400;
+      color: var(--green); letter-spacing: -0.02em;
     }
-    .nav-cta:hover { background: #16a34a !important; }
+    .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+    .nav-links a {
+      color: var(--muted); font-size: 0.875rem; font-weight: 500;
+      padding: 8px 16px; border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
 
-    /* ─── Signup Section ─── */
     .signup-section {
       padding: 60px 0;
       display: flex;
       justify-content: center;
+      position: relative; z-index: 1;
+      animation: fadeUp 0.6s 0.1s both cubic-bezier(0.16, 1, 0.3, 1);
     }
     .signup-card {
       max-width: 480px; width: 100%;
-      background: #18181b; border: 1px solid #27272a;
-      border-radius: 16px; padding: 40px 36px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 44px 36px;
     }
     .signup-card .header {
       text-align: center; margin-bottom: 28px;
     }
+    .signup-card .header .icon-ring {
+      width: 52px; height: 52px; margin: 0 auto 14px;
+      background: var(--green-dim);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    .signup-card .header .icon-ring svg {
+      width: 24px; height: 24px;
+      stroke: var(--green); fill: none; stroke-width: 1.5;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
     .signup-card .header h1 {
-      font-size: 1.5rem; font-weight: 700; color: #e4e4e7;
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.6rem; font-weight: 400;
+      letter-spacing: -0.02em; color: var(--text);
     }
     .signup-card .header p {
-      color: #a1a1aa; font-size: 0.95rem; margin-top: 4px;
-    }
-    .signup-card .header .shield {
-      width: 48px; height: 48px; margin: 0 auto 12px;
-      background: #22c55e20; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .signup-card .header .shield svg {
-      width: 24px; height: 24px; stroke: #22c55e; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+      color: var(--muted); font-size: 0.9rem; margin-top: 4px;
     }
 
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 18px; }
     .form-group label {
-      display: block; font-size: 0.85rem; font-weight: 600; color: #d4d4d8;
-      margin-bottom: 5px;
+      display: block; font-size: 0.8rem; font-weight: 600; color: var(--text);
+      margin-bottom: 6px; letter-spacing: 0.01em;
     }
-    .form-group input, .form-group select {
-      width: 100%; padding: 12px 14px; border-radius: 10px;
-      border: 1px solid #3f3f46; background: #0a0a0b;
-      font-size: 0.95rem; color: #e4e4e7; outline: none;
-      transition: border 0.2s;
+    .form-group input {
+      width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: rgba(8,8,10,0.6);
+      font-size: 0.9rem; color: var(--text); outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .form-group input:focus, .form-group select:focus {
-      border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+    .form-group input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px var(--green-dim);
     }
-    .form-group input::placeholder { color: #52525b; }
+    .form-group input::placeholder { color: var(--dim); }
     .form-group .hint {
-      font-size: 0.75rem; color: #52525b; margin-top: 4px;
+      font-size: 0.72rem; color: var(--dim); margin-top: 5px;
     }
     .row-fields { display: flex; gap: 12px; }
     .row-fields .form-group { flex: 1; }
 
-    .signup-btn {
-      width: 100%; padding: 14px; border-radius: 10px; border: none;
-      background: #22c55e; color: #0a0a0b; font-weight: 700; font-size: 1rem;
-      cursor: pointer; transition: 0.2s; margin-top: 8px;
+    .btn-submit {
+      width: 100%; padding: 14px; border-radius: var(--radius-sm); border: none;
+      background: var(--green); color: #08080a;
+      font-weight: 600; font-size: 0.95rem; font-family: inherit;
+      cursor: pointer; transition: all 0.2s; margin-top: 8px;
     }
-    .signup-btn:hover { background: #16a34a; }
-    .signup-btn:disabled {
-      background: #3f3f46; color: #71717a; cursor: not-allowed;
+    .btn-submit:hover { background: #1ea34e; transform: scale(0.98); }
+    .btn-submit:disabled {
+      background: var(--dim); color: #52525b;
+      cursor: not-allowed; transform: none;
     }
 
-    /* ─── Features Strip ─── */
     .features-strip {
-      display: flex; justify-content: center; gap: 24px;
-      padding: 16px 0; flex-wrap: wrap;
+      display: flex; justify-content: center; gap: 20px;
+      margin-top: 24px; flex-wrap: wrap;
     }
     .features-strip .item {
       display: flex; align-items: center; gap: 6px;
-      color: #a1a1aa; font-size: 0.85rem;
+      color: var(--muted); font-size: 0.82rem;
     }
-    .features-strip .item .icon { color: #22c55e; }
+    .features-strip .item .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+    }
 
-    /* ─── Divider ─── */
+    .terms-note {
+      text-align: center; margin-top: 18px;
+      font-size: 0.75rem; color: var(--dim);
+    }
+    .terms-note a {
+      color: var(--muted); text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .terms-note a:hover { color: var(--text); }
+
     .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0; color: #52525b; font-size: 0.8rem;
+      display: flex; align-items: center; gap: 14px;
+      margin: 20px 0; color: var(--dim); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.04em;
     }
     .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: #27272a;
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
 
-    /* ─── Google CTA ─── */
     .google-btn {
-      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #3f3f46;
-      background: transparent; color: #e4e4e7; font-weight: 600; font-size: 0.95rem;
-      cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 12px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent; color: var(--muted); font-weight: 500;
+      font-size: 0.9rem; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; transition: all 0.2s;
     }
-    .google-btn:hover { background: #27272a; border-color: #22c55e; }
+    .google-btn:hover {
+      background: rgba(255,255,255,0.02);
+      border-color: var(--dim);
+    }
 
-    /* ─── Toast ─── */
     .toast {
       display: none;
       position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
       background: #166534; color: #fff; padding: 16px 28px;
-      border-radius: 12px; font-size: 0.95rem; font-weight: 500;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 100; border: 1px solid #22c55e40;
+      border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 100;
+      border: 1px solid rgba(34,197,94,0.2);
       animation: slideDown 0.3s ease;
     }
-    .toast.error { background: #7f1d1d; border-color: #ef444440; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
+    .toast.error { background: #7f1d1d; border-color: rgba(239,68,68,0.2); }
 
-    /* ─── Plans Preview ─── */
     .plans-preview {
-      margin: 40px auto 0;
+      margin: 32px auto 0;
       max-width: 480px;
+      position: relative; z-index: 1;
     }
-    .plans-preview h3 {
-      text-align: center; font-size: 0.9rem; color: #71717a; margin-bottom: 16px;
-      font-weight: 400;
+    .plans-preview .preview-label {
+      text-align: center; font-size: 0.78rem; color: var(--dim); margin-bottom: 14px;
+      letter-spacing: 0.02em;
     }
-    .plan-toggle {
-      display: flex; background: #18181b; border: 1px solid #27272a;
-      border-radius: 10px; overflow: hidden;
-    }
-    .plan-toggle div {
-      flex: 1; text-align: center; padding: 12px; cursor: pointer;
-      font-size: 0.9rem; font-weight: 500; color: #a1a1aa; transition: 0.2s;
-    }
-    .plan-toggle div.active {
-      background: #22c55e; color: #0a0a0b;
-    }
-
-    .plan-details {
-      margin-top: 12px; display: flex; gap: 12px;
-    }
+    .plan-details { display: flex; gap: 12px; }
     .plan-detail {
-      flex: 1; background: #18181b; border: 1px solid #27272a;
-      border-radius: 12px; padding: 20px; text-align: center;
+      flex: 1; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 20px; text-align: center;
     }
-    .plan-detail.featured { border-color: #22c55e40; }
-    .plan-detail .name { font-size: 0.85rem; color: #a1a1aa; }
-    .plan-detail .price { font-size: 1.6rem; font-weight: 800; color: #e4e4e7; margin: 4px 0; }
-    .plan-detail .price span { font-size: 0.85rem; color: #71717a; font-weight: 400; }
+    .plan-detail.featured { border-color: rgba(34,197,94,0.15); }
+    .plan-detail .name { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .plan-detail .price {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.6rem; color: var(--text); margin: 4px 0;
+    }
+    .plan-detail .price span { font-size: 0.8rem; color: var(--dim); }
+    .plan-detail .desc { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
 
-    /* ─── Footer ─── */
     footer {
-      padding: 32px 0; text-align: center; color: #52525b; font-size: 0.85rem;
-      border-top: 1px solid #27272a;
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      position: relative; z-index: 1;
     }
-    footer a { color: #a1a1aa; text-decoration: none; }
-    footer a:hover { color: #e4e4e7; }
+    footer p { font-size: 0.85rem; color: var(--dim); }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
 
     @media (max-width: 600px) {
       .signup-card { padding: 28px 20px; }
       .row-fields { flex-direction: column; gap: 0; }
       .plan-details { flex-direction: column; }
-      .nav-links a:not(.nav-cta) { display: none; }
+      .nav-links a:not(.nav-home) { display: none; }
+      .signup-section { padding: 40px 0; }
     }
   </style>
 </head>
 <body>
 
+<div class="bg-ambient">
+  <div class="blob"></div>
+  <div class="blob"></div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <nav>
-  <a href="index.html" class="logo">Guardian<span>.</span></a>
-  <div class="nav-links">
-    <a href="index.html#how">How it works</a>
-    <a href="index.html#pricing">Pricing</a>
-    <a href="signup.html" class="nav-cta">Sign Up</a>
+  <div class="container">
+    <a href="index.html" class="logo">Guardian<span>.</span></a>
+    <div class="nav-links">
+      <a href="index.html#how" class="nav-home">How it works</a>
+      <a href="index.html#pricing" class="nav-home">Pricing</a>
+    </div>
   </div>
 </nav>
 
@@ -209,25 +301,17 @@
 
       <div class="signup-card">
         <div class="header">
-          <div class="shield">
+          <div class="icon-ring">
             <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
-          <h1>Create your account</h1>
-          <p>Start finding forgotten subscriptions in 30 seconds</p>
+          <h1>Early access</h1>
+          <p>Be the first to know what you're really spending.</p>
         </div>
-
-        <!-- Google Sign In (disabled until Railway backend is fixed) -->
-        <button class="google-btn" id="googleBtn" style="opacity:0.5;cursor:not-allowed;">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Google sign-in (coming soon)
-        </button>
-
-        <div class="divider">or sign up with email</div>
 
         <form id="signupForm" novalidate>
           <div class="row-fields">
             <div class="form-group">
-              <label for="firstName">First name *</label>
+              <label for="firstName">First name</label>
               <input type="text" id="firstName" name="firstName" placeholder="First name" required>
             </div>
             <div class="form-group">
@@ -237,44 +321,50 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email address *</label>
+            <label for="email">Email address</label>
             <input type="email" id="email" name="email" placeholder="you@email.com" required>
-            <div class="hint">We'll send your scan results and renewal alerts here.</div>
+            <div class="hint">We'll send your scan results and alerts here.</div>
           </div>
 
           <div class="form-group">
-            <label for="password">Create password *</label>
-            <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" required>
-            <div class="hint">Min. 8 characters. Protect your subscription data.</div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Min. 8 characters" minlength="8" required>
+            <div class="hint">Protect your subscription data.</div>
           </div>
 
-          <button type="submit" class="signup-btn" id="submitBtn">Create Free Account →</button>
+          <button type="submit" class="btn-submit" id="submitBtn">Join the waitlist →</button>
         </form>
 
-        <div class="features-strip" style="margin-top:20px;padding:0;">
-          <span class="item"><span class="icon">🛡️</span> Read-only Gmail</span>
-          <span class="item"><span class="icon">🗑️</span> Delete anytime</span>
-          <span class="item"><span class="icon">🔒</span> Encrypted</span>
+        <div class="divider">or</div>
+
+        <button class="google-btn" id="googleBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="features-strip">
+          <span class="item"><span class="dot"></span> Read-only Gmail</span>
+          <span class="item"><span class="dot"></span> Delete anytime</span>
+          <span class="item"><span class="dot"></span> End-to-end encrypted</span>
         </div>
 
-        <p style="text-align:center;margin-top:16px;font-size:0.8rem;color:#52525b;">
-          By signing up you agree to our <a href="#" style="color:#a1a1aa;">Terms</a> &amp; <a href="#" style="color:#a1a1aa;">Privacy Policy</a>.
+        <p class="terms-note">
+          By signing up you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
         </p>
       </div>
 
-      <!-- Plans Preview -->
       <div class="plans-preview">
-        <h3>Sign up free. Upgrade when you need more.</h3>
+        <div class="preview-label">Sign up free. Upgrade when you need more.</div>
         <div class="plan-details">
           <div class="plan-detail">
             <div class="name">Free</div>
-            <div class="price">$0<span>/mo</span></div>
-            <div style="color:#a1a1aa;font-size:0.8rem;margin-top:4px;">One scan, 10 subs</div>
+            <div class="price">£0<span>/mo</span></div>
+            <div class="desc">One scan, 10 subs</div>
           </div>
           <div class="plan-detail featured">
             <div class="name">Guardian</div>
-            <div class="price">$3<span>/mo</span></div>
-            <div style="color:#a1a1aa;font-size:0.8rem;margin-top:4px;">Unlimited, auto-scan</div>
+            <div class="price">£3<span>/mo</span></div>
+            <div class="desc">Unlimited, auto-scan</div>
           </div>
         </div>
       </div>
@@ -286,7 +376,7 @@
 
 <footer>
   <p>Subscription Guardian &mdash; Built for people who hate wasting money.</p>
-  <p style="margin-top:8px"><a href="mailto:hello@subscriptionguardian.com">hello@subscriptionguardian.com</a></p>
+  <p style="margin-top: 8px;"><a href="mailto:hello@subscriptionguardian.com">hello@subscriptionguardian.com</a></p>
 </footer>
 
 <script>
@@ -298,17 +388,15 @@ function showToast(msg, isError) {
   setTimeout(() => { t.style.display = 'none'; }, 4000);
 }
 
-// Google button — disabled until Railway backend is running
 document.getElementById('googleBtn').addEventListener('click', function() {
-  showToast('🔧 Google sign-in is coming soon! Please use the email form below.');
+  showToast('Google sign-in is coming soon. Please use the email form for now.');
 });
 
-// Email signup form
 document.getElementById('signupForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = 'Creating account...';
+  btn.textContent = 'Joining the waitlist...';
 
   const data = {
     firstName: document.getElementById('firstName').value.trim(),
@@ -317,26 +405,27 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     password: document.getElementById('password').value
   };
 
-  // Save locally
   try {
     const signups = JSON.parse(localStorage.getItem('sg_signups') || '[]');
     signups.push({ ...data, timestamp: new Date().toISOString() });
     localStorage.setItem('sg_signups', JSON.stringify(signups));
-  } catch {}
+  } catch (e) {}
 
-  // Submit to API (Vercel or Netlify — same endpoint)
   try {
     await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: data.email, name: data.firstName + ' ' + data.lastName })
+      body: JSON.stringify({
+        email: data.email,
+        name: data.firstName + ' ' + data.lastName
+      })
     });
-  } catch {}
+  } catch (e) {}
 
-  showToast('🎉 You\'re on the list! We\'ll let you know when we launch.');
+  showToast("You're on the list! We'll be in touch soon.");
   this.reset();
   btn.disabled = false;
-  btn.textContent = 'Create Free Account →';
+  btn.textContent = 'Join the waitlist →';
 });
 </script>
 
