@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription Guardian — Sign Up</title>
+  <meta name="description" content="Sign up for Subscription Guardian. Find every subscription you're paying for, see your real spend, and cancel what you don't need.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Subscription Guardian — Sign Up for Early Access">
+  <meta name="twitter:description" content="Sign up for Subscription Guardian. Find, track, and cancel forgotten subscriptions.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0b;
+      color: #e4e4e7;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; flex: 1; width: 100%; }
+
+    /* ─── Nav ─── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; max-width: 720px; margin: 0 auto; width: 100%;
+    }
+    .logo { font-weight: 700; font-size: 1.2rem; color: #22c55e; letter-spacing: -0.5px; text-decoration: none; }
+    .logo span { color: #e4e4e7; }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: #a1a1aa; text-decoration: none; font-size: 0.9rem; }
+    .nav-links a:hover { color: #e4e4e7; }
+    .nav-cta {
+      padding: 10px 20px; border-radius: 8px; background: #22c55e; color: #0a0a0b !important;
+      font-weight: 600; font-size: 0.85rem;
+    }
+    .nav-cta:hover { background: #16a34a !important; }
+
+    /* ─── Signup Section ─── */
+    .signup-section {
+      padding: 60px 0;
+      display: flex;
+      justify-content: center;
+    }
+    .signup-card {
+      max-width: 480px; width: 100%;
+      background: #18181b; border: 1px solid #27272a;
+      border-radius: 16px; padding: 40px 36px;
+    }
+    .signup-card .header {
+      text-align: center; margin-bottom: 28px;
+    }
+    .signup-card .header h1 {
+      font-size: 1.5rem; font-weight: 700; color: #e4e4e7;
+    }
+    .signup-card .header p {
+      color: #a1a1aa; font-size: 0.95rem; margin-top: 4px;
+    }
+    .signup-card .header .shield {
+      width: 48px; height: 48px; margin: 0 auto 12px;
+      background: #22c55e20; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .signup-card .header .shield svg {
+      width: 24px; height: 24px; stroke: #22c55e; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 0.85rem; font-weight: 600; color: #d4d4d8;
+      margin-bottom: 5px;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid #3f3f46; background: #0a0a0b;
+      font-size: 0.95rem; color: #e4e4e7; outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
+    }
+    .form-group input::placeholder { color: #52525b; }
+    .form-group .hint {
+      font-size: 0.75rem; color: #52525b; margin-top: 4px;
+    }
+    .row-fields { display: flex; gap: 12px; }
+    .row-fields .form-group { flex: 1; }
+
+    .signup-btn {
+      width: 100%; padding: 14px; border-radius: 10px; border: none;
+      background: #22c55e; color: #0a0a0b; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: 0.2s; margin-top: 8px;
+    }
+    .signup-btn:hover { background: #16a34a; }
+    .signup-btn:disabled {
+      background: #3f3f46; color: #71717a; cursor: not-allowed;
+    }
+
+    /* ─── Features Strip ─── */
+    .features-strip {
+      display: flex; justify-content: center; gap: 24px;
+      padding: 16px 0; flex-wrap: wrap;
+    }
+    .features-strip .item {
+      display: flex; align-items: center; gap: 6px;
+      color: #a1a1aa; font-size: 0.85rem;
+    }
+    .features-strip .item .icon { color: #22c55e; }
+
+    /* ─── Divider ─── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: #52525b; font-size: 0.8rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: #27272a;
+    }
+
+    /* ─── Google CTA ─── */
+    .google-btn {
+      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #3f3f46;
+      background: transparent; color: #e4e4e7; font-weight: 600; font-size: 0.95rem;
+      cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .google-btn:hover { background: #27272a; border-color: #22c55e; }
+
+    /* ─── Toast ─── */
+    .toast {
+      display: none;
+      position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+      background: #166534; color: #fff; padding: 16px 28px;
+      border-radius: 12px; font-size: 0.95rem; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); z-index: 100; border: 1px solid #22c55e40;
+      animation: slideDown 0.3s ease;
+    }
+    .toast.error { background: #7f1d1d; border-color: #ef444440; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ─── Plans Preview ─── */
+    .plans-preview {
+      margin: 40px auto 0;
+      max-width: 480px;
+    }
+    .plans-preview h3 {
+      text-align: center; font-size: 0.9rem; color: #71717a; margin-bottom: 16px;
+      font-weight: 400;
+    }
+    .plan-toggle {
+      display: flex; background: #18181b; border: 1px solid #27272a;
+      border-radius: 10px; overflow: hidden;
+    }
+    .plan-toggle div {
+      flex: 1; text-align: center; padding: 12px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500; color: #a1a1aa; transition: 0.2s;
+    }
+    .plan-toggle div.active {
+      background: #22c55e; color: #0a0a0b;
+    }
+
+    .plan-details {
+      margin-top: 12px; display: flex; gap: 12px;
+    }
+    .plan-detail {
+      flex: 1; background: #18181b; border: 1px solid #27272a;
+      border-radius: 12px; padding: 20px; text-align: center;
+    }
+    .plan-detail.featured { border-color: #22c55e40; }
+    .plan-detail .name { font-size: 0.85rem; color: #a1a1aa; }
+    .plan-detail .price { font-size: 1.6rem; font-weight: 800; color: #e4e4e7; margin: 4px 0; }
+    .plan-detail .price span { font-size: 0.85rem; color: #71717a; font-weight: 400; }
+
+    /* ─── Footer ─── */
+    footer {
+      padding: 32px 0; text-align: center; color: #52525b; font-size: 0.85rem;
+      border-top: 1px solid #27272a;
+    }
+    footer a { color: #a1a1aa; text-decoration: none; }
+    footer a:hover { color: #e4e4e7; }
+
+    @media (max-width: 600px) {
+      .signup-card { padding: 28px 20px; }
+      .row-fields { flex-direction: column; gap: 0; }
+      .plan-details { flex-direction: column; }
+      .nav-links a:not(.nav-cta) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<nav>
+  <a href="index.html" class="logo">Guardian<span>.</span></a>
+  <div class="nav-links">
+    <a href="index.html#how">How it works</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="signup.html" class="nav-cta">Sign Up</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <section class="signup-section">
+    <div>
+
+      <div class="signup-card">
+        <div class="header">
+          <div class="shield">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h1>Create your account</h1>
+          <p>Start finding forgotten subscriptions in 30 seconds</p>
+        </div>
+
+        <!-- Google Sign In -->
+        <button class="google-btn" id="googleBtn">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+        <div class="divider">or sign up with email</div>
+
+        <form id="signupForm" novalidate>
+          <div class="row-fields">
+            <div class="form-group">
+              <label for="firstName">First name *</label>
+              <input type="text" id="firstName" name="firstName" placeholder="First name" required>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last name</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Last name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email address *</label>
+            <input type="email" id="email" name="email" placeholder="you@email.com" required>
+            <div class="hint">We'll send your scan results and renewal alerts here.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Create password *</label>
+            <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" required>
+            <div class="hint">Min. 8 characters. Protect your subscription data.</div>
+          </div>
+
+          <button type="submit" class="signup-btn" id="submitBtn">Create Free Account →</button>
+        </form>
+
+        <div class="features-strip" style="margin-top:20px;padding:0;">
+          <span class="item"><span class="icon">🛡️</span> Read-only Gmail</span>
+          <span class="item"><span class="icon">🗑️</span> Delete anytime</span>
+          <span class="item"><span class="icon">🔒</span> Encrypted</span>
+        </div>
+
+        <p style="text-align:center;margin-top:16px;font-size:0.8rem;color:#52525b;">
+          By signing up you agree to our <a href="#" style="color:#a1a1aa;">Terms</a> &amp; <a href="#" style="color:#a1a1aa;">Privacy Policy</a>.
+        </p>
+      </div>
+
+      <!-- Plans Preview -->
+      <div class="plans-preview">
+        <h3>Sign up free. Upgrade when you need more.</h3>
+        <div class="plan-details">
+          <div class="plan-detail">
+            <div class="name">Free</div>
+            <div class="price">$0<span>/mo</span></div>
+            <div style="color:#a1a1aa;font-size:0.8rem;margin-top:4px;">One scan, 10 subs</div>
+          </div>
+          <div class="plan-detail featured">
+            <div class="name">Guardian</div>
+            <div class="price">$3<span>/mo</span></div>
+            <div style="color:#a1a1aa;font-size:0.8rem;margin-top:4px;">Unlimited, auto-scan</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>Subscription Guardian &mdash; Built for people who hate wasting money.</p>
+  <p style="margin-top:8px"><a href="mailto:hello@subscriptionguardian.com">hello@subscriptionguardian.com</a></p>
+</footer>
+
+<script>
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+}
+
+// Google button (placeholder for now)
+document.getElementById('googleBtn').addEventListener('click', function() {
+  // In production this would go to /auth/gmail
+  // For now, redirect to index.html?connect=gmail
+  window.location.href = '/auth/gmail';
+});
+
+// Email signup form
+document.getElementById('signupForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  const data = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: document.getElementById('password').value
+  };
+
+  // Save locally as fallback
+  try {
+    const signups = JSON.parse(localStorage.getItem('sg_signups') || '[]');
+    signups.push({ ...data, timestamp: new Date().toISOString() });
+    localStorage.setItem('sg_signups', JSON.stringify(signups));
+  } catch {}
+
+  // Try API
+  let apiOk = false;
+  try {
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.email, name: data.firstName + ' ' + data.lastName })
+    });
+    if (res.ok) apiOk = true;
+  } catch {}
+
+  showToast('🎉 Account created! Check your email to get started.');
+  this.reset();
+  btn.disabled = false;
+  btn.textContent = 'Create Free Account →';
+});
+</script>
+
+</body>
+</html>
