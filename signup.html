@@ -324,15 +324,13 @@ document.getElementById('signupForm').addEventListener('submit', async function(
     localStorage.setItem('sg_signups', JSON.stringify(signups));
   } catch {}
 
-  // Try API
-  let apiOk = false;
+  // Submit to Railway backend
   try {
-    const res = await fetch('/api/waitlist', {
+    const res = await fetch('https://subguard.up.railway.app/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: data.email, name: data.firstName + ' ' + data.lastName })
     });
-    if (res.ok) apiOk = true;
   } catch {}
 
   showToast('🎉 Account created! Check your email to get started.');
