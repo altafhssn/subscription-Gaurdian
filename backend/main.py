@@ -238,6 +238,12 @@ def init_db():
             state      TEXT PRIMARY KEY,
             created_at TEXT DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS waitlist (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            email      TEXT NOT NULL UNIQUE,
+            name       TEXT,
+            created_at TEXT DEFAULT (datetime('now'))
+        );
     """)
     conn.commit()
     conn.close()
@@ -907,6 +913,47 @@ class ConfirmRequest(BaseModel):
 @app.get("/health")
 async def health():
     return {"status": "ok", "version": "2.0.0"}
+
+
+class WaitlistRequest(BaseModel):
+    email: str = Field(min_length=5, max_length=200)
+    name: Optional[str] = None
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", v):
+            raise ValueError("Invalid email address")
+        return v
+
+
+@app.post("/api/waitlist")
+async def join_waitlist(req: WaitlistRequest):
+    """Public waitlist signup — no auth required."""
+    try:
+        conn = get_db()
+        conn.execute(
+            "INSERT OR IGNORE INTO waitlist (email, name) VALUES (?, ?)",
+            (req.email, req.name)
+        )
+        conn.commit()
+        conn.close()
+        return {"status": "ok", "message": "You're on the list!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/waitlist/count")
+async def waitlist_count():
+    """Public count of waitlist signups."""
+    try:
+        conn = get_db()
+        row = conn.execute("SELECT COUNT(*) as count FROM waitlist").fetchone()
+        conn.close()
+        return {"count": row["count"]}
+    except Exception as e:
+        return {"count": 0}
 
 
 @app.get("/api/me")
