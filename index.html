@@ -1,326 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subscription Guardian — Find Hidden Subscriptions in Seconds</title>
-  <meta name="description" content="Stop wasting money on forgotten subscriptions. Scan your Gmail, find every subscription, and cancel what you don't need.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
-      background: #fafafa;
-      color: #111;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription Guardian — Find & Cancel Gmail Subscriptions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fafafa; color: #1a1a2e; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    /* ─── Nav ─── */
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 24px; max-width: 1100px; margin: 0 auto;
-    }
-    .logo { font-weight: 700; font-size: 1.25rem; color: #1a1a2e; text-decoration: none; }
-    .logo span { color: #22c55e; }
-    .nav-right { display: flex; gap: 8px; align-items: center; }
-    .nav-right a {
-      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
-      padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
-    }
-    .nav-right a:hover { background: #f0f0f0; color: #111; }
-    .btn-primary {
-      background: #1a1a2e; color: #fff !important;
-      padding: 10px 20px !important; border-radius: 8px !important;
-      font-weight: 600 !important; font-size: 0.875rem !important;
-      transition: all 0.2s;
-    }
-    .btn-primary:hover { background: #2d2d4a !important; transform: translateY(-1px); }
-    .btn-primary.green { background: #22c55e; color: #fff !important; }
-    .btn-primary.green:hover { background: #16a34a !important; }
+/* Navigation */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; transition: box-shadow 0.2s; }
+nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.nav-left { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a2e; font-weight: 700; font-size: 20px; }
+.nav-left svg { width: 24px; height: 24px; }
+.nav-center { display: flex; gap: 32px; align-items: center; }
+.nav-center a { text-decoration: none; color: #6b7280; font-size: 15px; font-weight: 500; transition: color 0.15s; }
+.nav-center a:hover { color: #1a1a2e; }
+.nav-right { display: flex; align-items: center; gap: 20px; }
+.nav-right .login { text-decoration: none; color: #6b7280; font-size: 15px; font-weight: 500; transition: color 0.15s; }
+.nav-right .login:hover { color: #1a1a2e; }
+.nav-cta { background: #22c55e; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; transition: background 0.15s, transform 0.15s; display: inline-block; }
+.nav-cta:hover { background: #16a34a; transform: translateY(-1px); }
+.mobile-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.mobile-toggle span { display: block; width: 24px; height: 2px; background: #1a1a2e; border-radius: 2px; transition: 0.2s; }
 
-    .btn-outline {
-      background: transparent; color: #1a1a2e !important;
-      border: 1.5px solid #e0e0e0; padding: 10px 20px !important;
-      border-radius: 8px !important; font-weight: 600 !important;
-      font-size: 0.875rem !important; transition: all 0.2s;
-    }
-    .btn-outline:hover { border-color: #1a1a2e; background: transparent !important; }
+/* Container */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-    .btn-white {
-      background: #fff !important; color: #1a1a2e !important;
-      border: none; padding: 14px 28px !important;
-      border-radius: 10px !important; font-weight: 600 !important;
-      font-size: 0.95rem !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: all 0.2s;
-    }
-    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+/* Sections */
+section { padding: 88px 0; }
+.section-alt { background: #f8f8fb; }
+.section-white { background: #ffffff; }
+.section-dark { background: #1a1a2e; }
 
-    /* ─── Hero ─── */
-    .hero {
-      padding: 80px 0 60px;
-      text-align: center;
-      background: linear-gradient(180deg, #f0fdf4 0%, #fafafa 100%);
-    }
-    .hero h1 {
-      font-size: 3rem; font-weight: 800; line-height: 1.15;
-      letter-spacing: -0.03em;
-      max-width: 700px; margin: 0 auto;
-    }
-    .hero h1 em { color: #22c55e; font-style: normal; }
-    .hero p {
-      font-size: 1.1rem; color: #666;
-      max-width: 520px; margin: 16px auto 32px;
-      line-height: 1.6;
-    }
-    .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+/* Hero */
+.hero { display: flex; align-items: center; gap: 60px; padding: 24px 0 88px; }
+.hero-left { flex: 1; max-width: 50%; }
+.hero-badge { display: inline-flex; align-items: center; gap: 6px; background: #f3f4f6; color: #6b7280; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; }
+.hero h1 { font-size: clamp(32px, 3.2vw, 44px); font-weight: 700; line-height: 1.2; color: #1a1a2e; margin-bottom: 16px; letter-spacing: -0.02em; }
+.hero p { font-size: 17px; color: #6b7280; max-width: 480px; line-height: 1.7; margin-bottom: 28px; }
+.hero-cta { display: inline-flex; align-items: center; gap: 8px; background: #22c55e; color: #fff; text-decoration: none; height: 48px; padding: 0 32px; border-radius: 12px; font-size: 16px; font-weight: 600; transition: background 0.15s, transform 0.15s; }
+.hero-cta:hover { background: #16a34a; transform: translateY(-1px); }
+.hero-trust { font-size: 14px; color: #9ca3af; margin-top: 20px; }
 
-    .hero-stats {
-      display: flex; justify-content: center; gap: 48px;
-      margin-top: 56px; padding: 32px 0;
-      border-top: 1px solid #e8e8e8;
-      flex-wrap: wrap;
-    }
-    .hero-stats .stat .num {
-      font-size: 1.8rem; font-weight: 800; color: #1a1a2e;
-    }
-    .hero-stats .stat .label {
-      font-size: 0.85rem; color: #888; margin-top: 2px;
-    }
+/* Dashboard Mockup */
+.hero-right { flex: 1; max-width: 50%; }
+.dashboard { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
+.dash-titlebar { background: #f9fafb; padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e7eb; }
+.dash-dots { display: flex; gap: 6px; }
+.dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dash-dot.r { background: #ef4444; }
+.dash-dot.y { background: #f59e0b; }
+.dash-dot.g { background: #22c55e; }
+.dash-title-text { font-size: 13px; font-weight: 500; color: #6b7280; margin-left: 8px; flex: 1; }
+.dash-total-badge { background: #d1fae5; color: #16a34a; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+.dash-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f3f4f6; }
+.dash-header h3 { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.dash-header span { font-size: 12px; color: #9ca3af; }
+.dash-table { width: 100%; border-collapse: collapse; }
+.dash-table td { padding: 8px 16px; font-size: 13px; border-bottom: 1px solid #f3f4f6; }
+.dash-table td:first-child { display: flex; align-items: center; gap: 8px; }
+.dash-table .icon { width: 20px; text-align: center; }
+.dash-table .name { font-weight: 500; color: #1a1a2e; }
+.dash-table .price { font-weight: 600; color: #1a1a2e; }
+.dash-badge { background: #d1fae5; color: #16a34a; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+.dash-cancel { color: #ef4444; font-size: 12px; font-weight: 500; text-decoration: none; cursor: pointer; }
+.dash-cancel:hover { text-decoration: underline; }
+.dash-footer { padding: 12px 16px; background: #f9fafb; font-size: 13px; color: #6b7280; text-align: center; border-top: 1px solid #e5e7eb; }
+.dash-footer strong { color: #22c55e; }
 
-    /* ─── Dashboard Preview ─── */
-    .dashboard-preview {
-      padding: 40px 0 80px;
-      background: #fafafa;
-    }
-    .dashboard-preview .mockup {
-      max-width: 900px; margin: 0 auto;
-      background: #fff; border-radius: 16px;
-      border: 1px solid #e8e8e8;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
-    .mockup-header {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 20px;
-      background: #f8f8f8;
-      border-bottom: 1px solid #e8e8e8;
-    }
-    .mockup-header .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-    }
-    .mockup-header .dot:nth-child(1) { background: #ff5f57; }
-    .mockup-header .dot:nth-child(2) { background: #ffbd2e; }
-    .mockup-header .dot:nth-child(3) { background: #28c840; }
-    .mockup-body { padding: 24px; display: flex; gap: 24px; }
-    .mockup-sidebar {
-      width: 180px; flex-shrink: 0;
-    }
-    .mockup-sidebar .item {
-      padding: 10px 12px; border-radius: 8px;
-      font-size: 0.85rem; color: #888; margin-bottom: 4px;
-    }
-    .mockup-sidebar .item.active {
-      background: #f0fdf4; color: #22c55e; font-weight: 600;
-    }
-    .mockup-main { flex: 1; }
-    .mockup-main .row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 0; border-bottom: 1px solid #f0f0f0;
-    }
-    .mockup-main .row:last-child { border: none; }
-    .mockup-main .row .name { font-size: 0.9rem; font-weight: 600; color: #333; }
-    .mockup-main .row .amt { font-size: 0.9rem; font-weight: 600; color: #888; }
-    .mockup-main .row .badge {
-      font-size: 0.7rem; font-weight: 600; padding: 3px 8px;
-      border-radius: 4px; background: #f0fdf4; color: #22c55e;
-    }
-    .mockup-main .row .badge.red { background: #fef2f2; color: #ef4444; }
-    .mockup-main .row .badge.orange { background: #fff7ed; color: #f97316; }
+/* How It Works */
+.section-title { text-align: center; font-size: clamp(28px, 2.5vw, 36px); font-weight: 700; color: #1a1a2e; margin-bottom: 48px; letter-spacing: -0.02em; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px; transition: transform 0.2s, box-shadow 0.2s; }
+.step-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.step-icon { width: 48px; height: 48px; border-radius: 12px; background: #d1fae5; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 22px; }
+.step-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #1a1a2e; }
+.step-card p { font-size: 14px; color: #6b7280; line-height: 1.6; }
 
-    /* ─── Features ─── */
-    section { padding: 80px 0; }
-    section:nth-child(even) { background: #f8f8f8; }
-    .section-title {
-      text-align: center;
-      font-size: 2rem; font-weight: 800; letter-spacing: -0.02em;
-      margin-bottom: 12px;
-    }
-    .section-sub {
-      text-align: center; color: #666; font-size: 1rem;
-      max-width: 500px; margin: 0 auto 48px;
-    }
+/* Features Grid */
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.feature-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px; transition: transform 0.2s, box-shadow 0.2s; }
+.feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.feature-emoji { font-size: 28px; margin-bottom: 12px; }
+.feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; color: #1a1a2e; }
+.feature-card p { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 12px; }
+.feature-stat { display: inline-block; background: #d1fae5; color: #16a34a; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-    .feature-card {
-      background: #fff; border: 1px solid #e8e8e8;
-      border-radius: 12px; padding: 28px 24px;
-      transition: all 0.2s;
-    }
-    .feature-card:hover { border-color: #ccc; }
-    .feature-card .icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: #f0fdf4; display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; margin-bottom: 14px;
-    }
-    .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-    .feature-card p { font-size: 0.85rem; color: #888; line-height: 1.6; }
+/* Calculator */
+.calc-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.section-title-white { text-align: center; font-size: clamp(28px, 2.5vw, 36px); font-weight: 700; color: #ffffff; margin-bottom: 48px; letter-spacing: -0.02em; }
+.calc-sliders { display: flex; flex-direction: column; gap: 28px; }
+.calc-slider-group label { display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+.calc-slider-group label span { color: #22c55e; font-weight: 600; }
+.calc-slider-group input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.15); border-radius: 3px; outline: none; }
+.calc-slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #22c55e; cursor: pointer; border: 2px solid #fff; }
+.calc-slider-group input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #22c55e; cursor: pointer; border: 2px solid #fff; }
+.calc-output { text-align: center; }
+.calc-waste { font-size: 48px; font-weight: 800; color: #22c55e; margin-bottom: 8px; letter-spacing: -0.03em; }
+.calc-label { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+.calc-breakdown { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+.calc-cta { display: inline-flex; align-items: center; gap: 8px; background: #22c55e; color: #fff; text-decoration: none; height: 48px; padding: 0 32px; border-radius: 12px; font-size: 16px; font-weight: 600; transition: background 0.15s, transform 0.15s; }
+.calc-cta:hover { background: #16a34a; transform: translateY(-1px); }
 
-    /* ─── Pricing ─── */
-    .pricing-cards {
-      display: flex; gap: 20px; justify-content: center;
-      max-width: 600px; margin: 0 auto;
-    }
-    .pricing-card {
-      flex: 1; background: #fff; border: 1px solid #e8e8e8;
-      border-radius: 12px; padding: 28px 24px;
-    }
-    .pricing-card.featured {
-      border-color: #22c55e; box-shadow: 0 0 0 1px #22c55e;
-    }
-    .pricing-card .plan-name {
-      font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.04em; color: #888; margin-bottom: 8px;
-    }
-    .pricing-card .plan-price {
-      font-size: 2rem; font-weight: 800; margin-bottom: 4px;
-    }
-    .pricing-card .plan-price span { font-size: 1rem; font-weight: 400; color: #888; }
-    .pricing-card .plan-desc { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
-    .pricing-card ul { list-style: none; margin-bottom: 24px; }
-    .pricing-card ul li {
-      font-size: 0.85rem; color: #666; padding: 6px 0;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .pricing-card ul li::before {
-      content: ''; width: 5px; height: 5px; border-radius: 50%;
-      background: #22c55e; flex-shrink: 0;
-    }
-    .pricing-card .btn-primary,
-    .pricing-card .btn-outline {
-      display: block; text-align: center; text-decoration: none;
-      padding: 12px !important; font-size: 0.9rem !important;
-    }
+/* Pricing */
+.pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 40px; }
+.pricing-toggle span { font-size: 15px; font-weight: 500; color: #6b7280; }
+.pricing-toggle span.active { color: #1a1a2e; }
+.pricing-switch { position: relative; width: 44px; height: 24px; background: #e5e7eb; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+.pricing-switch.active { background: #22c55e; }
+.pricing-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+.pricing-switch.active::after { transform: translateX(20px); }
+.save-badge { display: none; background: #d1fae5; color: #16a34a; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.save-badge.show { display: inline-block; }
+.pricing-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto; }
+.pricing-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px; transition: transform 0.2s, box-shadow 0.2s; }
+.pricing-card.featured { border: 2px solid #22c55e; box-shadow: 0 8px 32px rgba(34,197,94,0.12); }
+.pricing-card:hover { transform: translateY(-2px); }
+.pricing-card h3 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.pricing-card .price { font-size: 36px; font-weight: 700; color: #1a1a2e; }
+.pricing-card .price span { font-size: 16px; font-weight: 400; color: #9ca3af; }
+.pricing-card .desc { font-size: 14px; color: #6b7280; margin: 8px 0 20px; }
+.pricing-card ul { list-style: none; padding: 0; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.pricing-card li { font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px; }
+.pricing-card li::before { content: '✓'; color: #22c55e; font-weight: 700; }
+.pricing-cta { display: block; text-align: center; text-decoration: none; padding: 14px; border-radius: 8px; font-weight: 600; font-size: 15px; transition: all 0.15s; }
+.pricing-cta.primary { background: #22c55e; color: #fff; }
+.pricing-cta.primary:hover { background: #16a34a; }
+.pricing-cta.secondary { background: #f3f4f6; color: #1a1a2e; }
+.pricing-cta.secondary:hover { background: #e5e7eb; }
+.pricing-note { text-align: center; margin-top: 16px; font-size: 14px; color: #9ca3af; }
+.pricing-period { font-size: 14px; color: #9ca3af; margin-bottom: 4px; }
+.features-list { list-style: none; padding: 0; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.features-list li { font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px; }
+.features-list li::before { content: '✓'; color: #22c55e; font-weight: 700; }
 
-    /* ─── CTA ─── */
-    .cta-section {
-      background: #1a1a2e !important; color: #fff;
-      text-align: center;
-    }
-    .cta-section h2 { color: #fff; }
-    .cta-section p { color: #999; }
+/* FAQ */
+.faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+details { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s; }
+details[open] { box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+summary { padding: 18px 24px; font-weight: 500; font-size: 15px; color: #1a1a2e; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '+'; font-size: 18px; color: #9ca3af; transition: transform 0.2s; }
+details[open] summary::after { content: '−'; }
+details p { padding: 0 24px 18px; font-size: 14px; color: #6b7280; line-height: 1.7; }
 
-    /* ─── Footer ─── */
-    footer {
-      padding: 40px 0; text-align: center;
-      border-top: 1px solid #e8e8e8;
-    }
-    footer p { font-size: 0.85rem; color: #888; }
-    footer a { color: #555; text-decoration: none; }
-    footer a:hover { color: #111; }
+/* CTA Section */
+.cta-section { text-align: center; }
+.cta-section h2 { font-size: clamp(28px, 2.5vw, 36px); font-weight: 700; color: #fff; margin-bottom: 12px; letter-spacing: -0.02em; }
+.cta-section p { font-size: 17px; color: rgba(255,255,255,0.6); margin-bottom: 32px; }
+.cta-big { display: inline-flex; align-items: center; gap: 8px; background: #22c55e; color: #fff; text-decoration: none; height: 56px; padding: 0 40px; border-radius: 12px; font-size: 17px; font-weight: 600; transition: background 0.15s, transform 0.15s; }
+.cta-big:hover { background: #16a34a; transform: translateY(-1px); }
+.cta-trust { font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 20px; }
 
-    /* ─── Responsive ─── */
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2rem; }
-      .features-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-      .pricing-cards { flex-direction: column; max-width: 340px; }
-      .hero-stats { gap: 24px; }
-      .dashboard-preview { display: none; }
-      .mockup-body { flex-direction: column; }
-      .mockup-sidebar { width: 100%; display: flex; gap: 4px; flex-wrap: wrap; }
-      .mockup-sidebar .item { flex: 1; text-align: center; min-width: 80px; }
-    }
-  </style>
+/* Footer */
+footer { background: #0e0e1a; padding: 64px 0 32px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+.footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+.footer-col p, .footer-col a { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.8; text-decoration: none; display: block; transition: color 0.15s; }
+.footer-col a:hover { color: #fff; }
+.footer-col .brand { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+.footer-bottom { max-width: 1200px; margin: 40px auto 0; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,0.08); font-size: 13px; color: rgba(255,255,255,0.3); text-align: center; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .mobile-toggle { display: flex; }
+  .nav-center, .nav-right { display: none; }
+  .nav-center.open, .nav-right.open { display: flex; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 16px 24px; gap: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .nav-center.open { align-items: flex-start; }
+  .nav-right.open { top: auto; position: static; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 0; }
+  .hero { flex-direction: column; gap: 40px; }
+  .hero-left, .hero-right { max-width: 100%; }
+  .hero h1 { font-size: 32px; }
+  .steps, .features-grid, .pricing-cards { grid-template-columns: 1fr; }
+  .calc-inner { grid-template-columns: 1fr; gap: 32px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .dash-table td { padding: 6px 10px; font-size: 12px; }
+  section { padding: 56px 0; }
+  .pricing-cards { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 28px; }
+  .nav-inner { padding: 0 16px; }
+  .container { padding: 0 16px; }
+}
+</style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="logo">Guardian<span>.</span></a>
-  <div class="nav-right">
-    <a href="#features">Features</a>
-    <a href="#pricing">Pricing</a>
-    <a href="signup.html" class="btn-primary">Get early access</a>
+<!-- Navbar -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Guardian.
+    </a>
+    <div class="nav-center" id="navCenter">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="nav-right" id="navRight">
+      <a href="signup.html" class="login">Log in</a>
+      <a href="signup.html" class="nav-cta">Scan Your Gmail Free</a>
+    </div>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
-<!-- ─── Hero ─── -->
-<section class="hero">
+<!-- Hero -->
+<section style="padding-top: 40px;">
   <div class="container">
-    <h1>Stop paying for subscriptions <em>you forgot about</em>.</h1>
-    <p>Connect your Gmail. We scan your inbox for subscription receipts and show you exactly what you're spending. No more surprise charges.</p>
-    <div class="hero-buttons">
-      <a href="signup.html" class="btn-primary green" style="padding:14px 28px!important;font-size:0.95rem!important;display:inline-block;">Find your subscriptions →</a>
-      <a href="#features" class="btn-outline" style="padding:14px 28px!important;font-size:0.95rem!important;display:inline-block;">See how it works</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="num">£219</div>
-        <div class="label">Avg monthly UK spend</div>
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-badge">🇬🇧 Trusted by UK users</div>
+        <h1>We scan your Gmail. Find every subscription. Cancel the ones you don't need.</h1>
+        <p>No bank login required. Connect your Gmail, we detect recurring charges from 50+ services, and you cancel in one click.</p>
+        <a href="signup.html" class="hero-cta">Scan your Gmail — Free</a>
+        <p class="hero-trust">🔒 No bank details needed. Cancel anytime.</p>
       </div>
-      <div class="stat">
-        <div class="num">68%</div>
-        <div class="label">Can't recall subscriptions</div>
-      </div>
-      <div class="stat">
-        <div class="num">11</div>
-        <div class="label">Forgotten subs per person</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── Dashboard Preview ─── -->
-<section class="dashboard-preview">
-  <div class="container">
-    <div class="mockup">
-      <div class="mockup-header">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <span style="font-size:0.8rem;color:#999;margin-left:8px;">Guardian Dashboard</span>
-      </div>
-      <div class="mockup-body">
-        <div class="mockup-sidebar">
-          <div class="item active">Dashboard</div>
-          <div class="item">Subscriptions</div>
-          <div class="item">Insights</div>
-          <div class="item">Settings</div>
-        </div>
-        <div class="mockup-main">
-          <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
-            <span style="font-weight:700;font-size:1rem;">Active subscriptions</span>
-            <span style="font-size:0.85rem;color:#888;">Total: £198/mo</span>
+      <div class="hero-right">
+        <div class="dashboard">
+          <div class="dash-titlebar">
+            <div class="dash-dots"><span class="dash-dot r"></span><span class="dash-dot y"></span><span class="dash-dot g"></span></div>
+            <span class="dash-title-text">Your detected subscriptions</span>
+            <span class="dash-total-badge">£47.50/mo</span>
           </div>
-          <div class="row">
-            <div class="name">Slack Pro</div>
-            <span class="badge">Business</span>
-            <div class="amt">£32.00/mo</div>
+          <div class="dash-header">
+            <h3>Subscription</h3>
+            <span>Details</span>
           </div>
-          <div class="row">
-            <div class="name">Figma</div>
-            <span class="badge">Business</span>
-            <div class="amt">£24.00/mo</div>
-          </div>
-          <div class="row">
-            <div class="name">Notion Plus</div>
-            <span class="badge">Business</span>
-            <div class="amt">£96.00/mo</div>
-          </div>
-          <div class="row">
-            <div class="name">Netflix Premium</div>
-            <span class="badge orange">Personal</span>
-            <div class="amt">£15.99/mo</div>
-          </div>
-          <div class="row">
-            <div class="name">Zoom Pro (Duplicate)</div>
-            <span class="badge red">Duplicate</span>
-            <div class="amt">£29.99/mo</div>
+          <table class="dash-table">
+            <tr><td><span class="icon">💬</span><span class="name">Slack</span></td><td class="price">£8.50</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">🎨</span><span class="name">Figma</span></td><td class="price">£12.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">📝</span><span class="name">Notion</span></td><td class="price">£5.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">🐙</span><span class="name">GitHub</span></td><td class="price">£4.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">🎬</span><span class="name">Netflix</span></td><td class="price">£10.99</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">📹</span><span class="name">Zoom</span></td><td class="price">£8.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+          </table>
+          <div class="dash-footer">
+            6 subscriptions detected · <strong>Potential savings: £47.50/mo</strong>
           </div>
         </div>
       </div>
@@ -328,93 +255,285 @@
   </div>
 </section>
 
-<!-- ─── Features ─── -->
-<section id="features">
+<!-- How It Works -->
+<section class="section-alt" id="how-it-works">
+  <div class="container">
+    <h2 class="section-title">How it works</h2>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-icon">🛡️</div>
+        <h3>Connect Gmail</h3>
+        <p>Grant read-only access. We never see your password or personal emails.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">🔍</div>
+        <h3>We detect subscriptions</h3>
+        <p>Our scanner finds recurring charges from 50+ services.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">✅</div>
+        <h3>Cancel in one click</h3>
+        <p>Review and cancel directly from your dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section-white" id="features">
   <div class="container">
     <h2 class="section-title">Everything you need. Nothing you don't.</h2>
-    <p class="section-sub">We find every subscription in your inbox and show you exactly what's costing you.</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="icon">🔍</div>
-        <h3>Automated Detection</h3>
-        <p>Scans your Gmail for subscription receipts, renewal notices, and price changes. Even finds stuff buried in spam.</p>
+        <div class="feature-emoji">🔍</div>
+        <h3>Gmail-Only Scan</h3>
+        <p>No bank login. We scan your inbox for subscription receipts.</p>
+        <span class="feature-stat">50+ services</span>
       </div>
       <div class="feature-card">
-        <div class="icon">💰</div>
-        <h3>AI Savings Insights</h3>
-        <p>Detects duplicates, overlapping services, and plans you're not utilising. Know exactly where to cut.</p>
+        <div class="feature-emoji">⏰</div>
+        <h3>Real-Time Monitoring</h3>
+        <p>Get alerted when prices change or new charges appear.</p>
+        <span class="feature-stat">Avg alert: 2 min</span>
       </div>
       <div class="feature-card">
-        <div class="icon">🔔</div>
-        <h3>Renewal Alerts</h3>
-        <p>Get notified before every renewal. Never get surprised by a £200 annual charge again.</p>
+        <div class="feature-emoji">✂️</div>
+        <h3>One-Click Cancellation</h3>
+        <p>Cancel directly from the dashboard. We handle the rest.</p>
+        <span class="feature-stat">95% success rate</span>
       </div>
       <div class="feature-card">
-        <div class="icon">📊</div>
-        <h3>Unified Dashboard</h3>
-        <p>Every subscription in one place. See your total monthly and annual spend at a glance.</p>
+        <div class="feature-emoji">📊</div>
+        <h3>Spend Insights</h3>
+        <p>See your total spend broken down by category and trend.</p>
+        <span class="feature-stat">Avg save: £340/yr</span>
       </div>
       <div class="feature-card">
-        <div class="icon">🗑️</div>
-        <h3>One-Click Cancellations</h3>
-        <p>Cancel subscriptions directly from the dashboard. No more hunting through settings pages.</p>
+        <div class="feature-emoji">🔒</div>
+        <h3>Privacy First</h3>
+        <p>Read-only Gmail access. GDPR compliant. UK data hosted.</p>
+        <span class="feature-stat">100% read-only</span>
       </div>
       <div class="feature-card">
-        <div class="icon">📄</div>
-        <h3>CSV Export</h3>
-        <p>Export your full subscription report for accounting, tax purposes, or just peace of mind.</p>
+        <div class="feature-emoji">👥</div>
+        <h3>Multi-Account</h3>
+        <p>Add multiple Gmail accounts in one dashboard.</p>
+        <span class="feature-stat">Up to 5 accounts</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── Pricing ─── -->
-<section id="pricing">
+<!-- Interactive Calculator -->
+<section class="section-dark">
   <div class="container">
-    <h2 class="section-title">Simple pricing. Immediate savings.</h2>
-    <p class="section-sub">Start free. Upgrade when you need to track more.</p>
+    <h2 class="section-title-white">What's your subscription spending costing you?</h2>
+    <div class="calc-inner">
+      <div class="calc-sliders">
+        <div class="calc-slider-group">
+          <label>Active subscriptions <span id="calcSubCount">6</span></label>
+          <input type="range" id="subCount" min="1" max="20" value="6">
+        </div>
+        <div class="calc-slider-group">
+          <label>Average cost per month (£) <span id="calcAvgCost">£12</span></label>
+          <input type="range" id="avgCost" min="5" max="100" value="12">
+        </div>
+        <div class="calc-slider-group">
+          <label>Months since you checked <span id="calcMonths">8</span></label>
+          <input type="range" id="monthsChecked" min="1" max="24" value="8">
+        </div>
+      </div>
+      <div class="calc-output">
+        <div class="calc-label">You could be wasting</div>
+        <div class="calc-waste" id="calcWaste">£576</div>
+        <div class="calc-breakdown" id="calcBreakdown">£72/mo across 6 subscriptions · <strong>8 months unchecked</strong></div>
+        <a href="signup.html" class="calc-cta">Start your free scan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section-white" id="pricing">
+  <div class="container">
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <div class="pricing-toggle">
+      <span class="active" id="toggleMonthlyLabel">Monthly</span>
+      <div class="pricing-switch" id="pricingToggle"></div>
+      <span id="toggleAnnualLabel">Annual</span>
+      <span class="save-badge" id="saveBadge">Save 20%</span>
+    </div>
     <div class="pricing-cards">
       <div class="pricing-card">
-        <div class="plan-name">Free</div>
-        <div class="plan-price">£0 <span>/mo</span></div>
-        <div class="plan-desc">One-time scan, up to 10 subscriptions.</div>
-        <ul>
-          <li>Full Gmail scan</li>
-          <li>Subscription dashboard</li>
-          <li>Monthly report</li>
+        <h3>Free</h3>
+        <div class="price">£0 <span>forever</span></div>
+        <p class="desc">One-time scan, up to 10 subscriptions</p>
+        <ul class="features-list">
+          <li>One-time Gmail scan</li>
+          <li>Up to 10 subscriptions detected</li>
+          <li>Cancel links provided</li>
+          <li>Basic dashboard view</li>
         </ul>
-        <a href="signup.html" class="btn-outline">Get started</a>
+        <a href="signup.html" class="pricing-cta secondary">Get started</a>
       </div>
       <div class="pricing-card featured">
-        <div class="plan-name">Guardian</div>
-        <div class="plan-price">£3 <span>/mo</span></div>
-        <div class="plan-desc">Unlimited tracking, auto-scan, alerts.</div>
-        <ul>
-          <li>Everything in Free</li>
-          <li>Unlimited subscriptions</li>
-          <li>Automatic weekly scans</li>
-          <li>Price increase alerts</li>
+        <h3>Guardian</h3>
+        <div class="price" id="guardianPrice">£3 <span id="guardianPeriod">/month</span></div>
+        <p class="desc">Unlimited auto-scan, alerts, cancellations</p>
+        <ul class="features-list">
+          <li>Continuous auto-scanning</li>
+          <li>Price change alerts</li>
           <li>One-click cancellations</li>
+          <li>Spend insights & trends</li>
+          <li>Multi-account support</li>
+          <li>Priority support</li>
         </ul>
-        <a href="signup.html" class="btn-primary green" style="text-decoration:none;padding:12px!important;display:block;font-size:0.9rem!important;">Start free trial</a>
+        <a href="signup.html" class="pricing-cta primary">Start 7-day free trial</a>
       </div>
+    </div>
+    <p class="pricing-note">7-day free trial on all paid plans</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-alt" id="faq">
+  <div class="container">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details>
+        <summary>Is my Gmail data safe?</summary>
+        <p>Absolutely. We use read-only Gmail access through Google's official API — we never see your password. All data is encrypted and hosted in the UK. We are fully GDPR compliant and never share your data with third parties.</p>
+      </details>
+      <details>
+        <summary>Does it work with UK services?</summary>
+        <p>Yes — any service that sends email receipts works with Subscription Guardian. From Netflix and Spotify to your gym membership and cloud storage, if it shows up in your Gmail, we'll find it.</p>
+      </details>
+      <details>
+        <summary>Can I try without a credit card?</summary>
+        <p>Yes! All paid plans come with a 7-day free trial. No credit card required to start. You only pay if you decide to continue after your trial ends.</p>
+      </details>
+      <details>
+        <summary>What services do you support?</summary>
+        <p>We support 50+ services including Netflix, Spotify, Apple Music, Adobe Creative Cloud, Amazon Prime, Disney+, AWS, Slack, Notion, Figma, GitHub, Google Workspace, Microsoft 365, and many more. If it sends an email receipt, we can detect it.</p>
+      </details>
+      <details>
+        <summary>How do you cancel subscriptions?</summary>
+        <p>We handle the entire cancellation process. You review the subscription on your dashboard, click cancel, and we take care of the rest — no need to navigate cancellation pages or talk to support. You approve the cancellation, we execute it.</p>      </details>
     </div>
   </div>
 </section>
 
-<!-- ─── CTA ─── -->
-<section class="cta-section">
-  <div class="container">
-    <h2 class="section-title">Ready to stop wasting money?</h2>
-    <p class="section-sub" style="margin-bottom:32px;">Join thousands taking control of their subscriptions.</p>
-    <a href="signup.html" class="btn-white" style="text-decoration:none;display:inline-block;">Get early access →</a>
+<!-- Dark CTA Section -->
+<section class="section-dark">
+  <div class="container cta-section">
+    <h2>Ready to know what you're really paying?</h2>
+    <p>Join thousands of UK users taking control of their subscriptions.</p>
+    <a href="signup.html" class="cta-big">Scan your Gmail — Free</a>
+    <p class="cta-trust">🔒 No bank details needed · Cancel anytime · GDPR compliant</p>
   </div>
 </section>
 
+<!-- Footer -->
 <footer>
-  <p>Subscription Guardian &mdash; Built for people who hate wasting money.</p>
-  <p style="margin-top: 8px;"><a href="mailto:hello@subscriptionguardian.com">hello@subscriptionguardian.com</a></p>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Guardian.
+      </div>
+      <p>We help UK users find and cancel unwanted subscriptions. Scan your Gmail, discover what you're paying for, and cancel in one click.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>hello@subscriptionguardian.co.uk</p>
+      <p>London, United Kingdom</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Subscription Guardian. GDPR compliant.
+  </div>
 </footer>
+
+<script>
+// Navbar scroll shadow
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// Mobile toggle
+const toggle = document.getElementById('mobileToggle');
+const navCenter = document.getElementById('navCenter');
+const navRight = document.getElementById('navRight');
+toggle.addEventListener('click', () => {
+  navCenter.classList.toggle('open');
+  navRight.classList.toggle('open');
+});
+
+// Calculator
+const subCount = document.getElementById('subCount');
+const avgCost = document.getElementById('avgCost');
+const monthsChecked = document.getElementById('monthsChecked');
+const calcSubCount = document.getElementById('calcSubCount');
+const calcAvgCost = document.getElementById('calcAvgCost');
+const calcMonths = document.getElementById('calcMonths');
+const calcWaste = document.getElementById('calcWaste');
+const calcBreakdown = document.getElementById('calcBreakdown');
+
+function updateCalc() {
+  const s = parseInt(subCount.value);
+  const a = parseInt(avgCost.value);
+  const m = parseInt(monthsChecked.value);
+  const total = s * a * m;
+  calcSubCount.textContent = s;
+  calcAvgCost.textContent = '£' + a;
+  calcMonths.textContent = m;
+  calcWaste.textContent = '£' + total.toLocaleString();
+  calcBreakdown.innerHTML = '£' + (s * a) + '/mo across ' + s + ' subscriptions · <strong>' + m + ' months unchecked</strong>';
+}
+subCount.addEventListener('input', updateCalc);
+avgCost.addEventListener('input', updateCalc);
+monthsChecked.addEventListener('input', updateCalc);
+
+// Pricing toggle
+const pricingToggle = document.getElementById('pricingToggle');
+const toggleMonthlyLabel = document.getElementById('toggleMonthlyLabel');
+const toggleAnnualLabel = document.getElementById('toggleAnnualLabel');
+const saveBadge = document.getElementById('saveBadge');
+const guardianPrice = document.getElementById('guardianPrice');
+const guardianPeriod = document.getElementById('guardianPeriod');
+let isAnnual = false;
+
+pricingToggle.addEventListener('click', () => {
+  isAnnual = !isAnnual;
+  pricingToggle.classList.toggle('active', isAnnual);
+  toggleMonthlyLabel.classList.toggle('active', !isAnnual);
+  toggleAnnualLabel.classList.toggle('active', isAnnual);
+  saveBadge.classList.toggle('show', isAnnual);
+  if (isAnnual) {
+    guardianPrice.innerHTML = '£25 <span>/year</span>';
+    guardianPeriod.textContent = '/year';
+  } else {
+    guardianPrice.innerHTML = '£3 <span>/month</span>';
+    guardianPeriod.textContent = '/month';
+  }
+});
+
+// Close mobile menu on link click
+document.querySelectorAll('.nav-center a').forEach(a => {
+  a.addEventListener('click', () => {
+    navCenter.classList.remove('open');
+    navRight.classList.remove('open');
+  });
+});
+</script>
 
 </body>
 </html>
