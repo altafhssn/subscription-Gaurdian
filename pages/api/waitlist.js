@@ -1,10 +1,8 @@
-// Vercel serverless function — captures waitlist signups
-// Deploy to Vercel (free tier). Signups stored in Vercel KV or just logged.
-// For simplicity, stores in a JSON file (ephemeral on serverless)
-// Better: use Vercel KV or a real DB later.
+// Vercel API function — captures waitlist signups
+// Next.js API route format
 
 export default async function handler(req, res) {
-  // CORS headers
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -23,15 +21,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Valid email is required' });
   }
 
-  // Log the signup (Vercel logs are accessible from dashboard)
+  // Log the signup
   console.log('NEW SIGNUP:', JSON.stringify({
     email: email.toLowerCase().trim(),
     name: name || '',
     timestamp: new Date().toISOString()
   }));
 
-  return res.status(200).json({ 
-    status: 'ok', 
+  // Return success
+  return res.status(200).json({
+    status: 'ok',
     message: "You're on the list!"
   });
 }

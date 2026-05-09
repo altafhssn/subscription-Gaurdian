@@ -6,7 +6,7 @@
     }
   },
   "rewrites": [
-    { "source": "/api/waitlist", "destination": "/pages/api/waitlist" },
+    { "source": "/api/waitlist", "destination": "/api/waitlist" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
