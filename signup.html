@@ -1,231 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Get Early Access — Subscription Guardian</title>
+
+<meta name="description" content="Sign in to Subscription Guardian or join the waitlist. Free Gmail scan. UK-built.">
+<meta name="theme-color" content="#0a2540">
+<title>Sign in — Subscription Guardian</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fafafa; color: #1a1a2e; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
-
-/* Navigation */
-nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; }
-.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
-.nav-left { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a2e; font-weight: 700; font-size: 20px; }
-.nav-left svg { width: 24px; height: 24px; }
-.nav-home { text-decoration: none; color: #6b7280; font-size: 15px; font-weight: 500; transition: color 0.15s; }
-.nav-home:hover { color: #1a1a2e; }
-
-/* Signup Form */
-.signup-wrapper { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 68px); padding: 48px 24px; }
-.signup-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 40px; max-width: 440px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
-.signup-icon { width: 48px; height: 48px; border-radius: 12px; background: #d1fae5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 22px; }
-.signup-card h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
-.signup-card .subtitle { text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 28px; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
-.form-group input { width: 100%; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 15px; font-family: inherit; color: #1a1a2e; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
-.form-group input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
-.form-group input::placeholder { color: #9ca3af; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.submit-btn { width: 100%; padding: 14px; background: #1a1a2e; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, transform 0.15s; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.submit-btn:hover { background: #2a2a4e; transform: translateY(-1px); }
-.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-/* Divider */
-.divider { display: flex; align-items: center; gap: 16px; margin: 20px 0; }
-.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
-.divider span { font-size: 13px; color: #9ca3af; font-weight: 500; }
-
-/* Google Button */
-.google-btn { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 15px; font-weight: 500; font-family: inherit; color: #6b7280; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: border-color 0.15s; }
-.google-btn:hover { border-color: #d1d5db; }
-
-/* Features strip */
-.features-strip { display: flex; justify-content: center; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
-.features-strip span { font-size: 13px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
-.features-strip span::before { content: '✓'; color: #22c55e; font-weight: 700; }
-
-/* Pricing mini */
-.pricing-mini { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.pricing-mini-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center; }
-.pricing-mini-card h4 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
-.pricing-mini-card .price { font-size: 20px; font-weight: 700; color: #1a1a2e; }
-.pricing-mini-card .price span { font-size: 13px; font-weight: 400; color: #9ca3af; }
-.pricing-mini-card .desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
-.pricing-mini-card.featured { border-color: #22c55e; }
-
-/* Toast */
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: #fff; padding: 14px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s ease; z-index: 200; pointer-events: none; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.success { background: #16a34a; }
-
-/* Footer */
-footer { background: #0e0e1a; padding: 48px 0 24px; margin-top: auto; }
-.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; text-align: center; }
-.footer-inner p { font-size: 13px; color: rgba(255,255,255,0.3); }
-
-/* Mobile */
-@media (max-width: 480px) {
-  .signup-card { padding: 24px; }
-  .form-row { grid-template-columns: 1fr; }
-  .nav-inner { padding: 0 16px; }
-  .signup-wrapper { padding: 24px 16px; }
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="auth-body">
 
-<!-- Navbar -->
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="nav-left">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Guardian.
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- Minimal nav -->
+<nav id="nav" class="nav-minimal">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand" aria-label="Subscription Guardian home">
+      <svg class="brand-mark" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 3 L27 7 V15 C27 22 22 27 16 29 C10 27 5 22 5 15 V7 Z" fill="#0a2540"/>
+        <path d="M11 16 L14.5 19.5 L21 12.5" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="brand-text">Subscription Guardian</span>
     </a>
-    <a href="index.html" class="nav-home">← Back to home</a>
+    <a href="index.html" class="nav-back">← Back to home</a>
   </div>
 </nav>
 
-<!-- Signup Form -->
-<div class="signup-wrapper">
-  <div class="signup-card">
-    <div class="signup-icon">🔒</div>
-    <h1>Get early access</h1>
-    <p class="subtitle">Join thousands finding and cancelling unwanted subscriptions.</p>
-    <form id="signupForm" novalidate>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="firstName">First name</label>
-          <input type="text" id="firstName" placeholder="James" required>
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last name</label>
-          <input type="text" id="lastName" placeholder="Wilson" required>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="email">Email address</label>
-        <input type="email" id="email" placeholder="james@example.com" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Create password</label>
-        <input type="password" id="password" placeholder="At least 8 characters" minlength="8" required>
-      </div>
-      <button type="submit" class="submit-btn" id="submitBtn">Join the waitlist →</button>
-    </form>
+<main id="main" class="auth-main">
+  <div class="container auth-container">
 
-    <div class="divider"><span>or</span></div>
+    <!-- Left: sign-in card -->
+    <div class="auth-card-wrap">
+      <div class="auth-card">
+        <h1 class="auth-title">Sign in to Guardian</h1>
+        <p class="auth-sub">We use Google sign-in only — no passwords for you to forget, no credentials for us to leak.</p>
 
-    <button class="google-btn" id="googleBtn">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Sign up with Google
-    </button>
+        <!-- PRIMARY: Google OAuth (real, working) -->
+        <a href="/auth/login" class="btn btn-google btn-block" id="googleBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </a>
 
-    <div class="features-strip">
-      <span>Read-only Gmail</span>
-      <span>Delete anytime</span>
-      <span>Encrypted</span>
+        <p class="auth-permissions">
+          By continuing, you grant <strong>read-only</strong> access to your Gmail.
+          You can revoke this from your <a href="https://myaccount.google.com/permissions" rel="noopener">Google account</a> at any time.
+        </p>
+
+        <div class="auth-divider"><span>or</span></div>
+
+        <!-- SECONDARY: waitlist form (no password!) -->
+        <form id="waitlistForm" class="waitlist-form" novalidate>
+          <p class="waitlist-intro">Not ready to scan? Join the early-access list — we'll email when there's news.</p>
+
+          <div class="form-group">
+            <label for="waitEmail">Email address</label>
+            <input
+              type="email"
+              id="waitEmail"
+              name="email"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="you@example.co.uk"
+              required
+              aria-describedby="waitEmailErr">
+            <small class="form-error" id="waitEmailErr" role="alert"></small>
+          </div>
+
+          <!-- Honeypot — bots fill this, humans don't see it -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="hp_field">Leave this empty</label>
+            <input type="text" id="hp_field" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button type="submit" class="btn btn-secondary btn-block" id="waitBtn">
+            Join the waitlist
+          </button>
+
+          <p class="waitlist-legal">
+            By joining you agree to our <a href="terms.html">terms</a> and
+            <a href="privacy.html">privacy policy</a>. We email you news, never spam,
+            and you can unsubscribe with one click.
+          </p>
+        </form>
+      </div>
     </div>
 
-    <div class="pricing-mini">
-      <div class="pricing-mini-card">
-        <h4>Free</h4>
-        <div class="price">£0 <span>forever</span></div>
-        <p class="desc">One-time scan</p>
+    <!-- Right: trust column -->
+    <aside class="auth-aside">
+      <div class="auth-aside-card">
+        <h2 class="auth-aside-title">Why Google sign-in?</h2>
+        <ul class="auth-aside-list">
+          <li>
+            <strong>No password to leak.</strong>
+            We literally don't have one to lose.
+          </li>
+          <li>
+            <strong>Read-only Gmail scope.</strong>
+            We can see receipts. We cannot send mail, delete, or read drafts.
+          </li>
+          <li>
+            <strong>Revoke from Google in one click.</strong>
+            Visit your Google account permissions whenever you like.
+          </li>
+          <li>
+            <strong>Tokens encrypted at rest.</strong>
+            PBKDF2-derived keys. We can't read your tokens in plaintext.
+          </li>
+        </ul>
       </div>
-      <div class="pricing-mini-card featured">
-        <h4>Guardian</h4>
-        <div class="price">£3 <span>/month</span></div>
-        <p class="desc">Auto-scan + alerts</p>
+
+      <div class="auth-aside-quote">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 7 L10 7 V10 L7 13 H4 V10 Z M14 7 L17 7 V10 L14 13 H11 V10 Z" fill="#22c55e" opacity=".4"/>
+        </svg>
+        <blockquote>
+          <p>"Found four subs I'd genuinely forgotten about. Cancelled Now TV in two clicks. Saved more than a Sunday roast."</p>
+          <footer>— beta tester, Manchester</footer>
+        </blockquote>
       </div>
-    </div>
+
+      <div class="auth-aside-meta">
+        <p><span>🇬🇧</span> Built in the UK</p>
+        <p><span>🔒</span> UK GDPR aligned</p>
+        <p><span>📂</span> <a href="https://github.com/altafhssn/subscription-Gaurdian" rel="noopener">Open source</a></p>
+      </div>
+    </aside>
+
   </div>
-</div>
+</main>
 
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <p>© 2026 Subscription Guardian. GDPR compliant.</p>
-  </div>
-</footer>
+<!-- Toast (live region for screen readers) -->
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-// Form submission
-const form = document.getElementById('signupForm');
-const submitBtn = document.getElementById('submitBtn');
-const toast = document.getElementById('toast');
-
-function showToast(message, type) {
-  toast.textContent = message;
-  toast.className = 'toast ' + type + ' show';
-  setTimeout(() => { toast.classList.remove('show'); }, 4000);
-}
-
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-
-  if (!firstName || !lastName || !email || !password) {
-    showToast('Please fill in all fields.', '');
-    return;
-  }
-
-  if (password.length < 8) {
-    showToast('Password must be at least 8 characters.', '');
-    return;
-  }
-
-  // Disable button
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Joining the waitlist...';
-
-  // Save to localStorage fallback
-  const data = { firstName, lastName, email };
-  try {
-    const existing = JSON.parse(localStorage.getItem('sg_waitlist') || '[]');
-    existing.push({ ...data, timestamp: new Date().toISOString() });
-    localStorage.setItem('sg_waitlist', JSON.stringify(existing));
-  } catch (e) {
-    // localStorage may be full
-  }
-
-  // POST to /api/waitlist
-  try {
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name: firstName + ' ' + lastName })
-    });
-    if (!res.ok) throw new Error('Server error');
-  } catch (err) {
-    // Server offline - localStorage fallback already saved
-    console.log('API unavailable, saved locally');
-  }
-
-  // Success
-  showToast('🎉 You\'re on the list! Check your inbox.', 'success');
-  form.reset();
-  submitBtn.disabled = false;
-  submitBtn.textContent = 'Join the waitlist →';
-});
-
-// Google button toast
-document.getElementById('googleBtn').addEventListener('click', function() {
-  showToast('Google sign-up coming soon!', '');
-});
-</script>
-
+<script src="auth.js"></script>
 </body>
 </html>
