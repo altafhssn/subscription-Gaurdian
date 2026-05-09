@@ -1,16 +1,17 @@
 {
   "functions": {
     "api/waitlist.js": {
-      "runtime": "@vercel/node@3"
+      "runtime": "@vercel/node@3",
+      "maxDuration": 10
     }
   },
-  "builds": [
-    { "src": "api/*.js", "use": "@vercel/node@3" },
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.css", "use": "@vercel/static", "continue": true }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "overrides": {
+    "*.html": {
+      "contentType": "text/html"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/$1" }
   ]
 }
