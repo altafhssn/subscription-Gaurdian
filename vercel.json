@@ -5,11 +5,6 @@
       "maxDuration": 10
     }
   },
-  "overrides": {
-    "*.html": {
-      "contentType": "text/html"
-    }
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/$1" }
