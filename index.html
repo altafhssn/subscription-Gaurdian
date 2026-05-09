@@ -3,418 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guardian — Find &amp; Cancel Hidden Subscriptions</title>
+<title>Subscription Guardian &mdash; Find &amp; Cancel Gmail Subscriptions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 112px; }
+html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f4f4f5;
-  color: #18181b;
-  line-height: 1.5;
-  font-size: 16px;
+  background: #d4d8dd;
+  color: #2d3240;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "cv11", "ss01";
 }
-img, svg { display: block; max-width: 100%; }
-a { color: inherit; text-decoration: none; }
+/* Navigation */
+nav { position: sticky; top: 0; z-index: 100; background: #d4d8dd; transition: box-shadow 0.2s; }
+nav.scrolled { box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.nav-left { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #2d3240; font-weight: 700; font-size: 20px; }
+.nav-left svg { width: 22px; height: 22px; }
+.nav-center { display: flex; gap: 32px; align-items: center; }
+.nav-center a { text-decoration: none; color: #7a7f8a; font-size: 15px; font-weight: 500; transition: color .15s; padding: 6px 12px; border-radius: 10px; }
+.nav-center a:hover { color: #2d3240; }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-right .login { text-decoration: none; color: #7a7f8a; font-size: 15px; font-weight: 500; transition: color .15s; }
+.nav-right .login:hover { color: #2d3240; }
+.nav-cta {
+  background: #d4d8dd; color: #2d9d5e; text-decoration: none;
+  padding: 10px 22px; border-radius: 14px; font-size: 14px; font-weight: 600;
+  box-shadow: 4px 4px 8px #b5b9be, -4px -4px 8px #ffffff;
+  transition: box-shadow .2s, transform .2s; display: inline-block;
+}
+.nav-cta:hover { box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; transform: translateY(1px); }
+.mobile-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.mobile-toggle span { display: block; width: 24px; height: 2px; background: #2d3240; border-radius: 2px; transition: .2s; }
 .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 section { padding: 88px 0; }
-
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: saturate(180%) blur(10px);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  border-bottom: 1px solid #e4e4e7;
-  transition: box-shadow 0.2s;
-}
-nav.scrolled { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
-.nav-inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 72px;
-}
-.nav-left {
-  display: flex; align-items: center; gap: 10px;
-  font-weight: 700; font-size: 22px; color: #18181b;
-}
-.nav-left svg { width: 24px; height: 24px; flex-shrink: 0; }
-.nav-center { display: flex; gap: 28px; align-items: center; }
-.nav-center a {
-  color: #71717a; font-size: 15px; font-weight: 500;
-  transition: color .15s; position: relative;
-}
-.nav-center a:hover { color: #18181b; }
-.nav-right { display: flex; align-items: center; gap: 16px; }
-.nav-right .login {
-  color: #52525b; font-size: 15px; font-weight: 500;
-  transition: color .15s;
-}
-.nav-right .login:hover { color: #18181b; }
-.btn-sweep {
-  position: relative; overflow: hidden; display: inline-flex;
-  align-items: center; gap: 8px; cursor: pointer;
-  border: none; outline: none; text-decoration: none;
-  font-family: inherit; font-weight: 600; font-size: 14px;
-  border-radius: 10px; padding: 10px 22px;
-  background: linear-gradient(135deg, #048c62, #05956a);
-  color: #fff; z-index: 1;
-  transition: box-shadow .2s, transform .15s;
-}
-.btn-sweep::before {
-  content: ''; position: absolute; inset: 0; z-index: -1;
-  background: #078e50;
-  transform: skew(-45deg) scaleX(0);
-  transform-origin: left;
-  transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.btn-sweep:hover::before { transform: skew(-45deg) scaleX(1); }
-.btn-sweep:hover { box-shadow: 0 0 0 2px rgba(4,140,98,0.15); }
-.btn-sweep:active { transform: scale(0.97); }
-
-.mobile-toggle {
-  display: none; flex-direction: column; gap: 5px;
-  cursor: pointer; background: none; border: none; padding: 4px;
-}
-.mobile-toggle span {
-  display: block; width: 24px; height: 2px;
-  background: #18181b; border-radius: 2px; transition: .2s;
-}
-
-.hero { display: flex; align-items: center; gap: 60px; padding: 40px 0 0; }
-.hero-left { flex: 1; max-width: 55%; }
+/* Hero */
+.hero { display: flex; align-items: center; gap: 60px; padding: 24px 0 0; }
+.hero-left { flex: 1; max-width: 50%; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(4,140,98,0.06); color: #048c62; font-size: 13px; font-weight: 500;
-  padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
-  border: 1px solid #e4e4e7;
+  background: #d4d8dd; color: #7a7f8a; font-size: 13px; font-weight: 500;
+  padding: 8px 18px; border-radius: 20px; margin-bottom: 20px;
+  box-shadow: 3px 3px 6px #b5b9be, -3px -3px 6px #ffffff;
 }
-.hero h1 {
-  font-size: 54px; font-weight: 800; line-height: 1.08;
-  letter-spacing: -0.03em; color: #18181b; margin-bottom: 20px;
+.hero h1 { font-size: clamp(32px,3.2vw,44px); font-weight: 700; line-height: 1.2; color: #2d3240; margin-bottom: 16px; letter-spacing: -.02em; }
+.hero p { font-size: 17px; color: #7a7f8a; max-width: 480px; line-height: 1.7; margin-bottom: 28px; }
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #d4d8dd; color: #2d9d5e; text-decoration: none;
+  height: 50px; padding: 0 32px; border-radius: 16px; font-size: 16px; font-weight: 600;
+  box-shadow: 4px 4px 8px #b5b9be, -4px -4px 8px #ffffff;
+  transition: box-shadow .2s, transform .2s;
 }
-.hero h1 span { color: #048c62; }
-.hero-sub {
-  font-size: 18px; color: #71717a; line-height: 1.6;
-  max-width: 480px; margin-bottom: 32px;
-}
-.hero-actions { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
-.hero-actions .btn-sweep { padding: 14px 32px; font-size: 16px; border-radius: 12px; gap: 10px; }
-.hero-trust {
-  display: flex; align-items: center; gap: 20px; color: #71717a; font-size: 14px;
-}
-.hero-trust .avatars { display: flex; }
-.hero-trust .avatars span {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 2px solid #fff; margin-right: -8px;
-  background: #e4e4e7; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: #71717a; font-weight: 600;
-}
-.hero-right { flex: 1; max-width: 45%; }
-
-.dashboard-mockup {
-  background: #fff; border-radius: 16px; border: 1px solid #e4e4e7;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-  overflow: hidden; position: relative;
-  animation: animate-float 4s ease-in-out infinite;
-}
-@keyframes animate-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-.mockup-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 14px 18px; border-bottom: 1px solid #e4e4e7;
-}
-.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
-.mockup-dot.r { background: #ef4444; }
-.mockup-dot.y { background: #eab308; }
-.mockup-dot.g { background: #22c55e; }
-.mockup-body { padding: 20px; }
-.mockup-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0; border-bottom: 1px solid #f4f4f5;
-}
-.mockup-row:last-child { border-bottom: none; }
-.mockup-row-left { display: flex; align-items: center; gap: 12px; }
-.mockup-icon {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: #f4f4f5; display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
-.mockup-info .mname { font-size: 14px; font-weight: 600; color: #18181b; }
-.mockup-info .mprice { font-size: 12px; color: #71717a; }
-.mockup-tag {
-  font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
-}
-.mockup-tag.active { background: rgba(4,140,98,0.06); color: #048c62; }
-.mockup-tag.waste { background: rgba(239,68,68,0.06); color: #ef4444; }
-.mockup-chart {
-  margin-top: 16px; padding: 16px; background: #f4f4f5; border-radius: 10px;
-  display: flex; align-items: flex-end; gap: 8px; height: 120px;
-}
-.mockup-bar {
-  flex: 1; border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #048c62, #05956a);
-  min-height: 20px;
-}
-
+.hero-cta:hover { box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; transform: translateY(1px); }
+.hero-trust { font-size: 14px; color: #7a7f8a; margin-top: 20px; }
+/* Dashboard */
+.hero-right { flex: 1; max-width: 50%; }
+.dashboard { background: #dbdfe4; border-radius: 20px; overflow: hidden; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; padding: 20px; }
+.dash-titlebar { background: #d4d8dd; padding: 14px 16px; display: flex; align-items: center; gap: 10px; border-radius: 14px; margin-bottom: 14px; box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; }
+.dash-dots { display: flex; gap: 6px; }
+.dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dash-dot.r { background: #e06666; }
+.dash-dot.y { background: #e6a33a; }
+.dash-dot.g { background: #2d9d5e; }
+.dash-title-text { font-size: 13px; font-weight: 500; color: #7a7f8a; margin-left: 8px; flex: 1; }
+.dash-total-badge { background: #d4d8dd; color: #2d9d5e; padding: 6px 14px; border-radius: 12px; font-size: 14px; font-weight: 700; box-shadow: 3px 3px 6px #b5b9be, -3px -3px 6px #ffffff; }
+.dash-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; margin-bottom: 6px; }
+.dash-header h3 { font-size: 14px; font-weight: 600; color: #2d3240; }
+.dash-header span { font-size: 12px; color: #7a7f8a; }
+.dash-table { width: 100%; border-collapse: collapse; }
+.dash-table tr { display: flex; align-items: center; padding: 8px 12px; margin-bottom: 8px; border-radius: 14px; background: #d4d8dd; box-shadow: 3px 3px 6px #b5b9be, -3px -3px 6px #ffffff; }
+.dash-table td { font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.dash-table td:first-child { flex: 1; }
+.dash-table td:nth-child(2) { font-weight: 600; color: #2d9d5e; margin-right: 8px; }
+.dash-table td:nth-child(3) { margin-right: 6px; }
+.dash-table .icon { width: 20px; text-align: center; font-size: 14px; }
+.dash-table .name { font-weight: 500; color: #2d3240; }
+.dash-badge { background: #d4d8dd; color: #2d9d5e; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; box-shadow: inset 2px 2px 4px #b5b9be, inset -2px -2px 4px #ffffff; }
+.dash-cancel { color: #2d3240; font-size: 12px; font-weight: 500; text-decoration: none; cursor: pointer; padding: 4px 10px; border-radius: 10px; background: #d4d8dd; box-shadow: 2px 2px 4px #b5b9be, -2px -2px 4px #ffffff; transition: box-shadow .15s; }
+.dash-cancel:hover { box-shadow: inset 2px 2px 4px #b5b9be, inset -2px -2px 4px #ffffff; }
+.dash-footer { padding: 14px 16px; font-size: 13px; color: #7a7f8a; text-align: center; margin-top: 12px; border-radius: 14px; background: #dbdfe4; box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; }
+.dash-footer strong { color: #2d9d5e; }
+/* How It Works */
+.section-title { text-align: center; font-size: clamp(28px,2.5vw,36px); font-weight: 700; color: #2d3240; margin-bottom: 48px; letter-spacing: -.02em; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step-card { background: #dbdfe4; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; transition: box-shadow .2s, transform .2s; }
+.step-card:hover { box-shadow: inset 4px 4px 8px #b5b9be, inset -4px -4px 8px #ffffff; transform: translateY(2px); }
+.step-icon { width: 56px; height: 56px; border-radius: 16px; background: #d4d8dd; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 24px; box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; }
+.step-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #2d3240; }
+.step-card p { font-size: 14px; color: #7a7f8a; line-height: 1.6; }
+/* Features */
 .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.feature-card {
-  position: relative; background: #fff; border-radius: 16px;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-  overflow: hidden; cursor: default;
-}
-.feature-card::before {
-  content: ''; position: absolute; inset: 0; border-radius: 16px;
-  padding: 1px; background: linear-gradient(to bottom, #f4f4f5, #e4e4e7);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude; pointer-events: none;
-}
-.feature-card-inner {
-  position: relative; z-index: 1; padding: 32px;
-  transition: background .15s;
-}
-.feature-card:hover .feature-card-inner {
-  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(4,140,98,0.04), transparent 40%);
-}
-.feature-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: rgba(4,140,98,0.06); display: flex;
-  align-items: center; justify-content: center;
-  font-size: 22px; margin-bottom: 16px;
-}
-.feature-card h3 { font-size: 18px; font-weight: 700; color: #18181b; margin-bottom: 8px; }
-.feature-card p { font-size: 15px; color: #71717a; line-height: 1.6; }
-.feature-stat {
-  margin-top: 16px; display: flex; align-items: center; gap: 6px;
-  font-size: 13px; font-weight: 600; color: #048c62;
-}
-
-.section-label {
-  text-align: center; font-size: 14px; font-weight: 600;
-  color: #048c62; text-transform: uppercase; letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-.section-title {
-  text-align: center; font-size: 36px; font-weight: 800;
-  letter-spacing: -0.02em; color: #18181b; margin-bottom: 12px;
-}
-.section-sub {
-  text-align: center; font-size: 17px; color: #71717a;
-  max-width: 560px; margin: 0 auto 48px;
-}
-.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.step-card {
-  background: #fff; border: 1px solid #e4e4e7; border-radius: 16px;
-  padding: 32px; text-align: center;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-}
-.step-number {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: rgba(4,140,98,0.06); color: #048c62;
-  font-size: 18px; font-weight: 700; display: flex;
-  align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-}
-.step-card h3 { font-size: 18px; font-weight: 700; color: #18181b; margin-bottom: 8px; }
-.step-card p { font-size: 15px; color: #71717a; line-height: 1.6; }
-
-.calculator-card {
-  background: #fff; border: 1px solid #e4e4e7; border-radius: 16px;
-  padding: 48px; max-width: 720px; margin: 0 auto;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-}
-.calc-row { margin-bottom: 28px; }
-.calc-row:last-child { margin-bottom: 0; }
-.calc-label {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px; font-weight: 500; font-size: 15px; color: #3f3f46;
-}
-.calc-label .calc-val { color: #048c62; font-weight: 700; font-size: 17px; }
-.calc-result {
-  margin-top: 28px; padding: 20px; background: rgba(4,140,98,0.06);
-  border-radius: 12px; text-align: center;
-}
-.calc-result .total { font-size: 36px; font-weight: 800; color: #048c62; }
-.calc-result .total-label { font-size: 14px; color: #71717a; margin-top: 4px; }
-input[type="range"] {
-  width: 100%; height: 6px; appearance: none; background: #e4e4e7;
-  border-radius: 3px; outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none; width: 20px; height: 20px; border-radius: 50%;
-  background: #048c62; cursor: pointer; border: 3px solid #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: #048c62; cursor: pointer; border: 3px solid #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.pricing-toggle {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  margin-bottom: 40px; font-size: 15px; color: #71717a; font-weight: 500;
-}
-.toggle-track {
-  width: 48px; height: 28px; background: #e4e4e7; border-radius: 14px;
-  position: relative; cursor: pointer; transition: background .2s;
-}
-.toggle-track.active { background: #048c62; }
-.toggle-knob {
-  position: absolute; top: 3px; left: 3px;
-  width: 22px; height: 22px; border-radius: 50%; background: #fff;
-  transition: transform .25s cubic-bezier(0.22,1,0.36,1);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-.toggle-track.active .toggle-knob { transform: translateX(20px); }
-.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.pricing-card {
-  background: #fff; border: 1px solid #e4e4e7; border-radius: 16px;
-  padding: 32px; text-align: center;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-  transition: box-shadow .2s;
-}
-.pricing-card.featured {
-  border-color: #048c62;
-  box-shadow: 0 0 0 1px #048c62, 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-}
-.pricing-card.featured::after {
-  content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-  background: linear-gradient(135deg, #048c62, #05956a); color: #fff;
-  font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px;
-  white-space: nowrap;
-}
-.pricing-name { font-size: 17px; font-weight: 700; color: #18181b; margin-bottom: 8px; }
-.pricing-price { font-size: 42px; font-weight: 800; color: #18181b; letter-spacing: -0.03em; margin-bottom: 4px; }
-.pricing-price span { font-size: 18px; font-weight: 500; color: #71717a; }
-.pricing-desc { font-size: 14px; color: #71717a; margin-bottom: 24px; }
-.pricing-features { list-style: none; margin-bottom: 28px; text-align: left; }
-.pricing-features li {
-  padding: 8px 0; font-size: 14px; color: #52525b;
-  display: flex; align-items: center; gap: 10px;
-}
-.pricing-features li::before { content: '\2713'; color: #048c62; font-weight: 700; }
-.pricing-card .btn-sweep { width: 100%; justify-content: center; padding: 12px; font-size: 15px; }
-
-.faq-list { max-width: 720px; margin: 0 auto; }
-.faq-item {
-  border: 1px solid #e4e4e7; border-radius: 12px; margin-bottom: 12px;
-  background: #fff; overflow: hidden;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-}
-.faq-question {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 24px; cursor: pointer; font-weight: 600; font-size: 15px;
-  color: #18181b; background: transparent; border: none; width: 100%;
-  font-family: inherit; text-align: left;
-}
-.faq-question svg {
-  width: 20px; height: 20px; color: #71717a;
-  transition: transform .25s; flex-shrink: 0;
-}
-.faq-item.open .faq-question svg { transform: rotate(180deg); }
-.faq-answer {
-  max-height: 0; overflow: hidden;
-  transition: max-height .3s cubic-bezier(0.22,1,0.36,1);
-  padding: 0 24px;
-}
-.faq-item.open .faq-answer { max-height: 300px; padding: 0 24px 18px; }
-.faq-answer p { font-size: 15px; color: #71717a; line-height: 1.6; }
-
-.cta-section { background: linear-gradient(180deg, #ffffff, #f4f4f5); }
-.cta-card {
-  background: #18181b; border-radius: 24px; padding: 64px;
-  text-align: center; color: #fff;
-}
-.cta-card h2 { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
-.cta-card p { font-size: 17px; color: #a1a1aa; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
-.cta-card .btn-sweep { font-size: 16px; padding: 14px 36px; border-radius: 12px; }
-
-footer {
-  background: #18181b; color: #fff; padding: 64px 0 32px;
-}
-.footer-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 48px;
-}
-.footer-col h4 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 16px; }
-.footer-col p { font-size: 14px; color: #a1a1aa; line-height: 1.6; }
-.footer-col a {
-  display: block; font-size: 14px; color: #a1a1aa; margin-bottom: 10px;
-  transition: color .15s;
-}
+.feature-card { background: #dbdfe4; border-radius: 16px; padding: 32px; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; transition: box-shadow .2s, transform .2s; }
+.feature-card:hover { box-shadow: inset 4px 4px 8px #b5b9be, inset -4px -4px 8px #ffffff; transform: translateY(2px); }
+.feature-emoji { width: 56px; height: 56px; border-radius: 16px; background: #d4d8dd; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 24px; box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; }
+.feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; color: #2d3240; }
+.feature-card p { font-size: 14px; color: #7a7f8a; line-height: 1.6; margin-bottom: 14px; }
+.feature-stat { display: inline-block; background: #d4d8dd; color: #2d9d5e; padding: 5px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; box-shadow: inset 2px 2px 4px #b5b9be, inset -2px -2px 4px #ffffff; }
+/* Calculator */
+.section-dark { background: #252a36; }
+.section-title-white { text-align: center; font-size: clamp(28px,2.5vw,36px); font-weight: 700; color: #fff; margin-bottom: 48px; letter-spacing: -.02em; }
+.calc-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.calc-sliders { display: flex; flex-direction: column; gap: 28px; }
+.calc-slider-group { background: #2e3340; padding: 20px 24px; border-radius: 16px; box-shadow: 6px 6px 12px #1e222c, -6px -6px 12px #363b48; }
+.calc-slider-group label { display: flex; justify-content: space-between; color: rgba(255,255,255,.7); font-size: 14px; font-weight: 500; margin-bottom: 10px; }
+.calc-slider-group label span { color: #2d9d5e; font-weight: 600; }
+.calc-slider-group input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; appearance: none; background: #252a36; border-radius: 3px; outline: none; box-shadow: inset 2px 2px 4px #1e222c, inset -2px -2px 4px #363b48; }
+.calc-slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #d4d8dd; cursor: pointer; box-shadow: 3px 3px 6px #1e222c, -3px -3px 6px #363b48; border: none; }
+.calc-slider-group input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #d4d8dd; cursor: pointer; box-shadow: 3px 3px 6px #1e222c, -3px -3px 6px #363b48; border: none; }
+.calc-output { background: #2e3340; padding: 40px 32px; border-radius: 16px; text-align: center; box-shadow: 8px 8px 16px #1e222c, -8px -8px 16px #363b48; }
+.calc-waste { font-size: 52px; font-weight: 800; color: #2d9d5e; margin-bottom: 8px; letter-spacing: -.03em; }
+.calc-label { font-size: 16px; color: rgba(255,255,255,.7); margin-bottom: 4px; }
+.calc-breakdown { font-size: 14px; color: rgba(255,255,255,.5); margin-bottom: 24px; }
+.calc-cta { display: inline-flex; align-items: center; gap: 8px; background: #2e3340; color: #2d9d5e; text-decoration: none; height: 50px; padding: 0 32px; border-radius: 16px; font-size: 16px; font-weight: 600; box-shadow: 4px 4px 8px #1e222c, -4px -4px 8px #363b48; transition: box-shadow .2s, transform .2s; }
+.calc-cta:hover { box-shadow: inset 3px 3px 6px #1e222c, inset -3px -3px 6px #363b48; transform: translateY(1px); }
+/* Pricing */
+.pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 40px; }
+.pricing-toggle span { font-size: 15px; font-weight: 500; color: #7a7f8a; transition: color .2s; }
+.pricing-toggle span.active { color: #2d3240; }
+.pricing-switch { position: relative; width: 48px; height: 26px; background: #d4d8dd; border-radius: 13px; cursor: pointer; box-shadow: inset 2px 2px 4px #b5b9be, inset -2px -2px 4px #ffffff; transition: box-shadow .2s; }
+.pricing-switch.active { box-shadow: 3px 3px 6px #b5b9be, -3px -3px 6px #ffffff; }
+.pricing-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #d4d8dd; border-radius: 50%; box-shadow: 2px 2px 4px #b5b9be, -2px -2px 4px #ffffff; transition: transform .2s; }
+.pricing-switch.active::after { transform: translateX(22px); }
+.save-badge { display: none; background: #d4d8dd; color: #2d9d5e; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: inset 2px 2px 4px #b5b9be, inset -2px -2px 4px #ffffff; }
+.save-badge.show { display: inline-block; }
+.pricing-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto; }
+.pricing-card { background: #dbdfe4; border-radius: 16px; padding: 36px; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; transition: box-shadow .2s, transform .2s; }
+.pricing-card.featured { box-shadow: 6px 6px 12px #b8d1c0, -6px -6px 12px #ffffff; }
+.pricing-card:hover { box-shadow: inset 4px 4px 8px #b5b9be, inset -4px -4px 8px #ffffff; transform: translateY(2px); }
+.pricing-card.featured:hover { box-shadow: inset 4px 4px 8px #b8d1c0, inset -4px -4px 8px #ffffff; }
+.pricing-card h3 { font-size: 20px; font-weight: 600; margin-bottom: 4px; color: #2d3240; }
+.pricing-card .price { font-size: 36px; font-weight: 700; color: #2d3240; }
+.pricing-card .price span { font-size: 16px; font-weight: 400; color: #7a7f8a; }
+.pricing-card .desc { font-size: 14px; color: #7a7f8a; margin: 8px 0 20px; }
+.features-list { list-style: none; padding: 0; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.features-list li { font-size: 14px; color: #7a7f8a; display: flex; align-items: center; gap: 8px; }
+.features-list li::before { content: "\2713"; color: #2d9d5e; font-weight: 700; }
+.pricing-cta { display: block; text-align: center; text-decoration: none; padding: 14px; border-radius: 14px; font-weight: 600; font-size: 15px; transition: box-shadow .15s, transform .15s; background: #d4d8dd; }
+.pricing-cta.primary { color: #2d9d5e; box-shadow: 4px 4px 8px #b5b9be, -4px -4px 8px #ffffff; }
+.pricing-cta.primary:hover { box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; transform: translateY(1px); }
+.pricing-cta.secondary { color: #2d3240; box-shadow: 4px 4px 8px #b5b9be, -4px -4px 8px #ffffff; }
+.pricing-cta.secondary:hover { box-shadow: inset 3px 3px 6px #b5b9be, inset -3px -3px 6px #ffffff; transform: translateY(1px); }
+.pricing-note { text-align: center; margin-top: 16px; font-size: 14px; color: #7a7f8a; }
+/* FAQ */
+.faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+details { background: #dbdfe4; border-radius: 16px; overflow: hidden; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; transition: box-shadow .2s; }
+details[open] { box-shadow: inset 4px 4px 8px #b5b9be, inset -4px -4px 8px #ffffff; }
+summary { padding: 18px 24px; font-weight: 500; font-size: 15px; color: #2d3240; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; background: #dbdfe4; border-radius: 16px; box-shadow: 4px 4px 8px #b5b9be, -4px -4px 8px #ffffff; transition: box-shadow .2s; }
+details[open] summary { border-radius: 16px 16px 0 0; box-shadow: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '+'; font-size: 18px; color: #7a7f8a; }
+details[open] summary::after { content: "\2212"; }
+details p { padding: 0 24px 22px; font-size: 14px; color: #7a7f8a; line-height: 1.7; }
+/* CTA */
+.cta-section { text-align: center; }
+.cta-section h2 { font-size: clamp(28px,2.5vw,36px); font-weight: 700; color: #fff; margin-bottom: 12px; letter-spacing: -.02em; }
+.cta-section p { font-size: 17px; color: rgba(255,255,255,.6); margin-bottom: 32px; }
+.cta-big { display: inline-flex; align-items: center; gap: 8px; background: #2e3340; color: #2d9d5e; text-decoration: none; height: 56px; padding: 0 40px; border-radius: 16px; font-size: 17px; font-weight: 600; box-shadow: 6px 6px 12px #1e222c, -6px -6px 12px #363b48; transition: box-shadow .2s, transform .2s; }
+.cta-big:hover { box-shadow: inset 3px 3px 6px #1e222c, inset -3px -3px 6px #363b48; transform: translateY(1px); }
+.cta-trust { font-size: 14px; color: rgba(255,255,255,.4); margin-top: 20px; }
+/* Footer */
+footer { background: #252a36; padding: 64px 0 32px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+.footer-col { background: #2e3340; padding: 24px; border-radius: 16px; box-shadow: 4px 4px 8px #1e222c, -4px -4px 8px #363b48; }
+.footer-col h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: .05em; }
+.footer-col p, .footer-col a { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.8; text-decoration: none; display: block; transition: color .15s; }
 .footer-col a:hover { color: #fff; }
-.footer-bottom {
-  padding-top: 24px; border-top: 1px solid #27272a;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 14px; color: #71717a;
-}
-
-.page-fade { animation: pageEnter .5s ease-out; }
-@keyframes pageEnter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-slide {
-  animation: slideUp .6s cubic-bezier(0.22,1,0.36,1) both;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 900px) {
+.footer-col .brand { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+.footer-bottom { max-width: 1200px; margin: 40px auto 0; padding: 20px 24px 0; font-size: 13px; color: rgba(255,255,255,.3); text-align: center; }
+/* Mobile */
+@media (max-width: 768px) {
+  .mobile-toggle { display: flex; }
+  .nav-center, .nav-right { display: none; }
+  .nav-center.open, .nav-right.open { display: flex; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: #d4d8dd; padding: 16px 24px; gap: 16px; box-shadow: 8px 8px 16px #b5b9be, -8px -8px 16px #ffffff; }
+  .nav-center.open { align-items: flex-start; }
+  .nav-right.open { top: auto; position: static; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 0; }
   .hero { flex-direction: column; gap: 40px; }
   .hero-left, .hero-right { max-width: 100%; }
-  .hero h1 { font-size: 40px; }
-  .features-grid { grid-template-columns: 1fr; }
-  .steps-grid { grid-template-columns: 1fr; }
-  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-  .footer-grid { grid-template-columns: repeat(2, 1fr); }
-  .nav-center { display: none; }
-  .nav-center.open { display: flex; flex-direction: column; position: absolute; top: 72px; left: 0; right: 0; background: rgba(255,255,255,0.98); backdrop-filter: saturate(180%) blur(10px); border-bottom: 1px solid #e4e4e7; padding: 16px 24px; gap: 16px; }
-  .mobile-toggle { display: flex; }
-  .nav-right .login { display: none; }
-}
-@media (max-width: 600px) {
   .hero h1 { font-size: 32px; }
-  .section-title { font-size: 28px; }
-  .calculator-card { padding: 24px; }
-  .cta-card { padding: 40px 24px; }
-  .cta-card h2 { font-size: 28px; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+  .steps, .features-grid, .pricing-cards { grid-template-columns: 1fr; }
+  .calc-inner { grid-template-columns: 1fr; gap: 32px; }
+  .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .dash-table tr { padding: 6px 10px; font-size: 12px; }
+  section { padding: 56px 0; }
+  .pricing-cards { max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 28px; }
+  .nav-inner { padding: 0 16px; }
+  .container { padding: 0 16px; }
 }
 </style>
 </head>
-<body class="page-fade">
+<body>
+
 <nav id="navbar">
   <div class="nav-inner">
-    <a href="/" class="nav-left">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#048c62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Guardian
+    <a href="#" class="nav-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2d9d5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Guardian.
     </a>
-    <div class="nav-center" id="navMenu">
+    <div class="nav-center" id="navCenter">
       <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
       <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
     </div>
-    <div class="nav-right">
-      <a href="#" class="login">Log in</a>
-      <a href="signup.html" class="btn-sweep">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Upload a Statement
-      </a>
+    <div class="nav-right" id="navRight">
+      <a href="signup.html" class="login">Log in</a>
+      <a href="signup.html" class="nav-cta">Scan Your Gmail Free</a>
     </div>
     <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -422,145 +222,38 @@ footer {
   </div>
 </nav>
 
-<section style="padding-top: 40px; padding-bottom: 40px;">
+<section style="padding-top: 40px;">
   <div class="container">
     <div class="hero">
       <div class="hero-left">
-        <div class="hero-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Free statement audit
-        </div>
-        <h1>Stop wasting money on <span>forgotten subscriptions.</span></h1>
-        <p class="hero-sub">Upload your bank statement and let AI find every subscription, recurring charge, and hidden fee — in seconds.</p>
-        <div class="hero-actions">
-          <a href="signup.html" class="btn-sweep" style="padding:14px 32px; font-size:16px; border-radius:12px; gap:10px;">
-            Upload Statement → Find Hidden Charges
-          </a>
-        </div>
-        <div class="hero-trust">
-          <div class="avatars">
-            <span>JD</span><span>AK</span><span>MR</span><span>SL</span>
-          </div>
-          <span>Trusted by 2,400+ subscribers</span>
-        </div>
+        <div class="hero-badge">&#127468;&#127463; Trusted by UK users</div>
+        <h1>We scan your Gmail. Find every subscription. Cancel the ones you don&#8217;t need.</h1>
+        <p>No bank login required. Connect your Gmail, we detect recurring charges from 50+ services, and you cancel in one click.</p>
+        <a href="signup.html" class="hero-cta">Scan your Gmail &#8212; Free</a>
+        <p class="hero-trust">&#128274; No bank details needed. Cancel anytime.</p>
       </div>
       <div class="hero-right">
-        <div class="dashboard-mockup">
-          <div class="mockup-header">
-            <span class="mockup-dot r"></span>
-            <span class="mockup-dot y"></span>
-            <span class="mockup-dot g"></span>
-            <span style="font-size:12px;color:#71717a;margin-left:8px;">Statement Summary</span>
+        <div class="dashboard">
+          <div class="dash-titlebar">
+            <div class="dash-dots"><span class="dash-dot r"></span><span class="dash-dot y"></span><span class="dash-dot g"></span></div>
+            <span class="dash-title-text">Your detected subscriptions</span>
+            <span class="dash-total-badge">&pound;47.50/mo</span>
           </div>
-          <div class="mockup-body">
-            <div class="mockup-row">
-              <div class="mockup-row-left">
-                <div class="mockup-icon">🎧</div>
-                <div class="mockup-info"><div class="mname">Spotify Premium</div><div class="mprice">₹119 / mo</div></div>
-              </div>
-              <span class="mockup-tag active">Active</span>
-            </div>
-            <div class="mockup-row">
-              <div class="mockup-row-left">
-                <div class="mockup-icon">📺</div>
-                <div class="mockup-info"><div class="mname">Netflix Standard</div><div class="mprice">₹649 / mo</div></div>
-              </div>
-              <span class="mockup-tag active">Active</span>
-            </div>
-            <div class="mockup-row">
-              <div class="mockup-row-left">
-                <div class="mockup-icon">💪</div>
-                <div class="mockup-info"><div class="mname">Old Gym Membership</div><div class="mprice">₹1,499 / mo</div></div>
-              </div>
-              <span class="mockup-tag waste">Forgotten</span>
-            </div>
-            <div class="mockup-row">
-              <div class="mockup-row-left">
-                <div class="mockup-icon">📁</div>
-                <div class="mockup-info"><div class="mname">Drive Storage (2TB)</div><div class="mprice">₹650 / mo</div></div>
-              </div>
-              <span class="mockup-tag waste">Unused</span>
-            </div>
-            <div class="mockup-chart">
-              <div class="mockup-bar" style="height:60px;background:linear-gradient(180deg,#a1a1aa,#71717a);"></div>
-              <div class="mockup-bar" style="height:85px;background:linear-gradient(180deg,#a1a1aa,#71717a);"></div>
-              <div class="mockup-bar" style="height:45px;background:linear-gradient(180deg,#a1a1aa,#71717a);"></div>
-              <div class="mockup-bar" style="height:90px;background:linear-gradient(180deg,#048c62,#05956a);"></div>
-              <div class="mockup-bar" style="height:70px;background:linear-gradient(180deg,#048c62,#05956a);"></div>
-              <div class="mockup-bar" style="height:100px;background:linear-gradient(180deg,#048c62,#05956a);"></div>
-              <div class="mockup-bar" style="height:55px;background:linear-gradient(180deg,#a1a1aa,#71717a);"></div>
-            </div>
+          <div class="dash-header">
+            <h3>Subscription</h3>
+            <span>Details</span>
+          </div>
+          <table class="dash-table">
+            <tr><td><span class="icon">&#128172;</span><span class="name">Slack</span></td><td class="price">&pound;8.50</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">&#127912;</span><span class="name">Figma</span></td><td class="price">&pound;12.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">&#128195;</span><span class="name">Notion</span></td><td class="price">&pound;5.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">&#128025;</span><span class="name">GitHub</span></td><td class="price">&pound;4.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">&#127916;</span><span class="name">Netflix</span></td><td class="price">&pound;10.99</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>
+            <tr><td><span class="icon">&#128249;</span><span class="name">Zoom</span></td><td class="price">&pound;8.00</td><td><span class="dash-badge">Active</span></td><td><a class="dash-cancel" href="signup.html">Cancel</a></td></tr>          </table>
+          <div class="dash-footer">
+            6 subscriptions detected &middot; <strong>Potential savings: &pound;47.50/mo</strong>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="features">
-  <div class="container">
-    <p class="section-label">Features</p>
-    <h2 class="section-title">Everything you need to cut the fat.</h2>
-    <p class="section-sub">Upload once. We scan every transaction and tell you exactly what to cancel.</p>
-    <div class="features-grid">
-      <div class="feature-card" data-spotlight>
-        <div class="feature-card-inner">
-          <div class="feature-icon">🔍</div>
-          <h3>AI-Powered Detection</h3>
-          <p>Our engine identifies recurring charges even when the merchant name is obfuscated or changes monthly.</p>
-          <div class="feature-stat">99.2% accuracy rate →</div>
-        </div>
-      </div>
-      <div class="feature-card" data-spotlight>
-        <div class="feature-card-inner">
-          <div class="feature-icon">📊</div>
-          <h3>Spend Dashboard</h3>
-          <p>See all your subscriptions in one beautiful view. Filter by category, cost, and usage frequency.</p>
-          <div class="feature-stat">Avg. ₹3,200/mo found per user →</div>
-        </div>
-      </div>
-      <div class="feature-card" data-spotlight>
-        <div class="feature-card-inner">
-          <div class="feature-icon">🔔</div>
-          <h3>Smart Alerts</h3>
-          <p>Get notified about price hikes, free trials ending, and subscriptions you haven't used in 30+ days.</p>
-          <div class="feature-stat">Save up to 40% annually →</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="calculator" style="padding-top:40px;padding-bottom:40px;">
-  <div class="container">
-    <p class="section-label">Savings Calculator</p>
-    <h2 class="section-title">See how much you're leaking.</h2>
-    <p class="section-sub">Most people are shocked at what they find.</p>
-    <div class="calculator-card">
-      <div class="calc-row">
-        <div class="calc-label">
-          <span>Active subscriptions</span>
-          <span class="calc-val" id="calcSubs">8</span>
-        </div>
-        <input type="range" id="subsSlider" min="1" max="25" value="8" step="1">
-      </div>
-      <div class="calc-row">
-        <div class="calc-label">
-          <span>Avg. monthly cost per sub (₹)</span>
-          <span class="calc-val" id="calcCost">₹350</span>
-        </div>
-        <input type="range" id="costSlider" min="50" max="2000" value="350" step="10">
-      </div>
-      <div class="calc-row">
-        <div class="calc-label">
-          <span>Forgotten subs (unused)</span>
-          <span class="calc-val" id="calcForgotten">3</span>
-        </div>
-        <input type="range" id="forgottenSlider" min="0" max="15" value="3" step="1">
-      </div>
-      <div class="calc-result">
-        <div class="total" id="calcTotal">₹12,600</div>
-        <div class="total-label">wasted per year on forgotten subscriptions</div>
       </div>
     </div>
   </div>
@@ -568,24 +261,94 @@ footer {
 
 <section id="how-it-works">
   <div class="container">
-    <p class="section-label">How It Works</p>
-    <h2 class="section-title">Three steps to take control.</h2>
-    <p class="section-sub">No credit card. No commitment. Just clarity.</p>
-    <div class="steps-grid">
+    <h2 class="section-title">How it works</h2>
+    <div class="steps">
       <div class="step-card">
-        <div class="step-number">1</div>
-        <h3>Upload Your Statement</h3>
-        <p>We use bank-level encryption. Your data never touches our servers without your consent.</p>
+        <div class="step-icon">&#128737;</div>
+        <h3>Connect Gmail</h3>
+        <p>Grant read-only access. We never see your password or personal emails.</p>
       </div>
       <div class="step-card">
-        <div class="step-number">2</div>
-        <h3>AI Analyzes Everything</h3>
-        <p>Our engine classifies every transaction and flags recurring charges — even tricky ones.</p>
+        <div class="step-icon">&#128269;</div>
+        <h3>We detect subscriptions</h3>
+        <p>Our scanner finds recurring charges from 50+ services.</p>
       </div>
       <div class="step-card">
-        <div class="step-number">3</div>
-        <h3>Cancel with One Click</h3>
-        <p>Get a personalized action plan. We connect you directly to cancel unused services.</p>
+        <div class="step-icon">&#10004;&#65039;</div>
+        <h3>Cancel in one click</h3>
+        <p>Review and cancel directly from your dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">Everything you need. Nothing you don&#8217;t.</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-emoji">&#128269;</div>
+        <h3>Gmail-Only Scan</h3>
+        <p>No bank login. We scan your inbox for subscription receipts.</p>
+        <span class="feature-stat">50+ services</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-emoji">&#9200;</div>
+        <h3>Real-Time Monitoring</h3>
+        <p>Get alerted when prices change or new charges appear.</p>
+        <span class="feature-stat">Avg alert: 2 min</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-emoji">&#9986;</div>
+        <h3>One-Click Cancellation</h3>
+        <p>Cancel directly from the dashboard. We handle the rest.</p>
+        <span class="feature-stat">95% success rate</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-emoji">&#128202;</div>
+        <h3>Spend Insights</h3>
+        <p>See your total spend broken down by category and trend.</p>
+        <span class="feature-stat">Avg save: &pound;340/yr</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-emoji">&#128274;</div>
+        <h3>Privacy First</h3>
+        <p>Read-only Gmail access. GDPR compliant. UK data hosted.</p>
+        <span class="feature-stat">100% read-only</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-emoji">&#128101;</div>
+        <h3>Multi-Account</h3>
+        <p>Add multiple Gmail accounts in one dashboard.</p>
+        <span class="feature-stat">Up to 5 accounts</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-dark">
+  <div class="container">
+    <h2 class="section-title-white">What&#8217;s your subscription spending costing you?</h2>
+    <div class="calc-inner">
+      <div class="calc-sliders">
+        <div class="calc-slider-group">
+          <label>Active subscriptions <span id="calcSubCount">6</span></label>
+          <input type="range" id="subCount" min="1" max="20" value="6">
+        </div>
+        <div class="calc-slider-group">
+          <label>Average cost per month (&pound;) <span id="calcAvgCost">&pound;12</span></label>
+          <input type="range" id="avgCost" min="5" max="100" value="12">
+        </div>
+        <div class="calc-slider-group">
+          <label>Months since you checked <span id="calcMonths">8</span></label>
+          <input type="range" id="monthsChecked" min="1" max="24" value="8">
+        </div>
+      </div>
+      <div class="calc-output">
+        <div class="calc-label">You could be wasting</div>
+        <div class="calc-waste" id="calcWaste">&pound;576</div>
+        <div class="calc-breakdown" id="calcBreakdown">&pound;72/mo across 6 subscriptions &middot; <strong>8 months unchecked</strong></div>
+        <a href="signup.html" class="calc-cta">Start your free scan</a>
       </div>
     </div>
   </div>
@@ -593,234 +356,175 @@ footer {
 
 <section id="pricing">
   <div class="container">
-    <p class="section-label">Pricing</p>
-    <h2 class="section-title">Simple, transparent pricing.</h2>
-    <p class="section-sub">No hidden fees. Cancel anytime.</p>
+    <h2 class="section-title">Simple, transparent pricing</h2>
     <div class="pricing-toggle">
-      <span id="monthlyLabel">Monthly</span>
-      <div class="toggle-track" id="pricingToggle">
-        <div class="toggle-knob"></div>
-      </div>
-      <span id="annualLabel">Annual <span style="color:#048c62;font-weight:600;">Save 20%</span></span>
+      <span class="active" id="toggleMonthlyLabel">Monthly</span>
+      <div class="pricing-switch" id="pricingToggle"></div>
+      <span id="toggleAnnualLabel">Annual</span>
+      <span class="save-badge" id="saveBadge">Save 20%</span>
     </div>
-    <div class="pricing-grid">
+    <div class="pricing-cards">
       <div class="pricing-card">
-        <div class="pricing-name">Starter</div>
-        <div class="pricing-price"><span class="price-amount" data-monthly="299" data-annual="239">₹299</span><span>/mo</span></div>
-        <div class="pricing-desc">For individuals getting started</div>
-        <ul class="pricing-features">
-          <li>Scan up to 12 months of statements</li>
-          <li>AI subscription detection</li>
-          <li>Basic spend dashboard</li>
-          <li>Email alerts</li>
+        <h3>Free</h3>
+        <div class="price">&pound;0 <span>forever</span></div>
+        <p class="desc">One-time scan, up to 10 subscriptions</p>
+        <ul class="features-list">
+          <li>One-time Gmail scan</li>
+          <li>Up to 10 subscriptions detected</li>
+          <li>Cancel links provided</li>
+          <li>Basic dashboard view</li>
         </ul>
-        <button class="btn-sweep">Get Started</button>
+        <a href="signup.html" class="pricing-cta secondary">Get started</a>
       </div>
       <div class="pricing-card featured">
-        <div class="pricing-name">Pro</div>
-        <div class="pricing-price"><span class="price-amount" data-monthly="599" data-annual="479">₹599</span><span>/mo</span></div>
-        <div class="pricing-desc">For families and power users</div>
-        <ul class="pricing-features">
-          <li>Unlimited statement history</li>
-          <li>Real-time subscription monitoring</li>
-          <li>Advanced analytics &amp; charts</li>
-          <li>One-click cancellation assistant</li>
+        <h3>Guardian</h3>
+        <div class="price" id="guardianPrice">&pound;3 <span id="guardianPeriod">/month</span></div>
+        <p class="desc">Unlimited auto-scan, alerts, cancellations</p>
+        <ul class="features-list">
+          <li>Continuous auto-scanning</li>
+          <li>Price change alerts</li>
+          <li>One-click cancellations</li>
+          <li>Spend insights &amp; trends</li>
+          <li>Multi-account support</li>
           <li>Priority support</li>
         </ul>
-        <button class="btn-sweep">Get Started</button>
-      </div>
-      <div class="pricing-card">
-        <div class="pricing-name">Business</div>
-        <div class="pricing-price"><span class="price-amount" data-monthly="1499" data-annual="1199">₹1,499</span><span>/mo</span></div>
-        <div class="pricing-desc">For teams and organizations</div>
-        <ul class="pricing-features">
-          <li>Everything in Pro</li>
-          <li>Team account management</li>
-          <li>Multi-account monitoring</li>
-          <li>Custom spending policies</li>
-          <li>API access &amp; integrations</li>
-          <li>Dedicated account manager</li>
-        </ul>
-        <button class="btn-sweep">Get Started</button>
+        <a href="signup.html" class="pricing-cta primary">Start 7-day free trial</a>
       </div>
     </div>
+    <p class="pricing-note">7-day free trial on all paid plans</p>
   </div>
 </section>
 
-<section id="faq" style="padding-top:60px;padding-bottom:60px;">
+<section id="faq">
   <div class="container">
-    <p class="section-label">FAQ</p>
-    <h2 class="section-title">Got questions?</h2>
-    <p class="section-sub">We've got answers.</p>
+    <h2 class="section-title">Frequently asked questions</h2>
     <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-question">
-          Is my bank data secure?
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer"><p>Absolutely. We use 256-bit encryption and never store your raw statement data. All processing happens in isolated, ephemeral containers that are destroyed after analysis.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">
-          How long does the scan take?
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer"><p>Most scans complete in under 60 seconds. Even 24-month statements with hundreds of transactions are analyzed within 2 minutes.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">
-          What types of statements do you support?
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer"><p>We support PDF, CSV, and image formats from all major banks. Our AI can parse any standard bank statement format automatically.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">
-          Can I cancel anytime?
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer"><p>Yes. No lock-in contracts. Cancel with one click and keep all your data. We'll even export your findings for you.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">
-          What happens if I find a subscription I want to cancel?
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer"><p>We provide direct links and instructions for each service. Pro and Business plans include our one-click cancellation assistant that handles the process for you.</p></div>
-      </div>
+      <details>
+        <summary>Is my Gmail data safe?</summary>
+        <p>Absolutely. We use read-only Gmail access through Google&#8217;s official API &#8212; we never see your password. All data is encrypted and hosted in the UK. We are fully GDPR compliant and never share your data with third parties.</p>
+      </details>
+      <details>
+        <summary>Does it work with UK services?</summary>
+        <p>Yes &#8212; any service that sends email receipts works with Subscription Guardian. From Netflix and Spotify to your gym membership and cloud storage, if it shows up in your Gmail, we&#8217;ll find it.</p>
+      </details>
+      <details>
+        <summary>Can I try without a credit card?</summary>
+        <p>Yes! All paid plans come with a 7-day free trial. No credit card required to start. You only pay if you decide to continue after your trial ends.</p>
+      </details>
+      <details>
+        <summary>What services do you support?</summary>
+        <p>We support 50+ services including Netflix, Spotify, Apple Music, Adobe Creative Cloud, Amazon Prime, Disney+, AWS, Slack, Notion, Figma, GitHub, Google Workspace, Microsoft 365, and many more. If it sends an email receipt, we can detect it.</p>
+      </details>
+      <details>
+        <summary>How do you cancel subscriptions?</summary>
+        <p>We handle the entire cancellation process. You review the subscription on your dashboard, click cancel, and we take care of the rest &#8212; no need to navigate cancellation pages or talk to support.</p>
+      </details>
     </div>
   </div>
 </section>
 
-<section class="cta-section" style="padding-top:60px;padding-bottom:60px;">
-  <div class="container">
-    <div class="cta-card">
-      <h2>Ready to stop wasting money?</h2>
-      <p>Join thousands of subscribers who've taken control of their spending. Get your free statement audit today.</p>
-      <a href="signup.html" class="btn-sweep" style="font-size:16px;padding:14px 36px;border-radius:12px;">
-        Get Your Free Audit →
-      </a>
-    </div>
+<section class="section-dark">
+  <div class="container cta-section">
+    <h2>Ready to know what you&#8217;re really paying?</h2>
+    <p>Join thousands of UK users taking control of their subscriptions.</p>
+    <a href="signup.html" class="cta-big">Scan your Gmail &#8212; Free</a>
+    <p class="cta-trust">&#128274; No bank details needed &middot; Cancel anytime &middot; GDPR compliant</p>
   </div>
 </section>
 
 <footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <h4>Guardian</h4>
-        <p>AI-powered subscription management. Find, track, and cancel unwanted subscriptions from one dashboard.</p>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2d9d5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Guardian.
       </div>
-      <div class="footer-col">
-        <h4>Product</h4>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="signup.html">Early Access</a>
-        <a href="#faq">FAQ</a>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <a href="#">About</a>
-        <a href="#">Blog</a>
-        <a href="#">Careers</a>
-        <a href="#">Contact</a>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cookie Policy</a>
-        <a href="#">GDPR</a>
-      </div>
+      <p>We help UK users find and cancel unwanted subscriptions. Scan your Gmail, discover what you&#8217;re paying for, and cancel in one click.</p>
     </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 Guardian. All rights reserved.</span>
-      <span>Made with ❤️ for your wallet.</span>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="signup.html">Sign Up</a>
     </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>hello@subscriptionguardian.co.uk</p>
+      <p>London, United Kingdom</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 Subscription Guardian. GDPR compliant.
   </div>
 </footer>
 
 <script>
-(function() {
-  // Mobile nav toggle
-  var toggle = document.getElementById('mobileToggle');
-  var menu = document.getElementById('navMenu');
-  if (toggle && menu) {
-    toggle.addEventListener('click', function() {
-      menu.classList.toggle('open');
-    });
-  }
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+});
 
-  // Navbar scroll shadow
-  var nav = document.getElementById('navbar');
-  if (nav) {
-    window.addEventListener('scroll', function() {
-      nav.classList.toggle('scrolled', window.scrollY > 10);
-    }, { passive: true });
-  }
+const toggle = document.getElementById('mobileToggle');
+const navCenter = document.getElementById('navCenter');
+const navRight = document.getElementById('navRight');
+toggle.addEventListener('click', () => {
+  navCenter.classList.toggle('open');
+  navRight.classList.toggle('open');
+});
 
-  // Spotlight cards - mouse tracking for radial gradient
-  var cards = document.querySelectorAll('[data-spotlight]');
-  cards.forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var rect = card.getBoundingClientRect();
-      var x = ((e.clientX - rect.left) / rect.width) * 100;
-      var y = ((e.clientY - rect.top) / rect.height) * 100;
-      card.style.setProperty('--mouse-x', x + '%');
-      card.style.setProperty('--mouse-y', y + '%');
-    });
+const subCount = document.getElementById('subCount');
+const avgCost = document.getElementById('avgCost');
+const monthsChecked = document.getElementById('monthsChecked');
+const calcSubCount = document.getElementById('calcSubCount');
+const calcAvgCost = document.getElementById('calcAvgCost');
+const calcMonths = document.getElementById('calcMonths');
+const calcWaste = document.getElementById('calcWaste');
+const calcBreakdown = document.getElementById('calcBreakdown');
+
+function updateCalc() {
+  const s = parseInt(subCount.value);
+  const a = parseInt(avgCost.value);
+  const m = parseInt(monthsChecked.value);
+  const total = s * a * m;
+  calcSubCount.textContent = s;
+  calcAvgCost.textContent = '£' + a;
+  calcMonths.textContent = m;
+  calcWaste.textContent = '£' + total.toLocaleString();
+}
+subCount.addEventListener('input', updateCalc);
+avgCost.addEventListener('input', updateCalc);
+monthsChecked.addEventListener('input', updateCalc);
+
+const pricingToggle = document.getElementById('pricingToggle');
+const toggleMonthlyLabel = document.getElementById('toggleMonthlyLabel');
+const toggleAnnualLabel = document.getElementById('toggleAnnualLabel');
+const saveBadge = document.getElementById('saveBadge');
+const guardianPrice = document.getElementById('guardianPrice');
+const guardianPeriod = document.getElementById('guardianPeriod');
+let isAnnual = false;
+
+pricingToggle.addEventListener('click', () => {
+  isAnnual = !isAnnual;
+  pricingToggle.classList.toggle('active', isAnnual);
+  toggleMonthlyLabel.classList.toggle('active', !isAnnual);
+  toggleAnnualLabel.classList.toggle('active', isAnnual);
+  saveBadge.classList.toggle('show', isAnnual);
+  if (isAnnual) {
+    guardianPrice.innerHTML = '£25 <span>/year</span>';
+    guardianPeriod.textContent = '/year';
+  } else {
+    guardianPrice.innerHTML = '£3 <span>/month</span>';
+    guardianPeriod.textContent = '/month';
+  }
+});
+
+document.querySelectorAll('.nav-center a').forEach(a => {
+  a.addEventListener('click', () => {
+    navCenter.classList.remove('open');
+    navRight.classList.remove('open');
   });
-
-  // Calculator
-  var subsSlider = document.getElementById('subsSlider');
-  var costSlider = document.getElementById('costSlider');
-  var forgottenSlider = document.getElementById('forgottenSlider');
-  var calcSubs = document.getElementById('calcSubs');
-  var calcCost = document.getElementById('calcCost');
-  var calcForgotten = document.getElementById('calcForgotten');
-  var calcTotal = document.getElementById('calcTotal');
-
-  function updateCalc() {
-    var subs = parseInt(subsSlider.value);
-    var cost = parseInt(costSlider.value);
-    var forgotten = parseInt(forgottenSlider.value);
-    calcSubs.textContent = subs;
-    calcCost.textContent = '\u20B9' + cost;
-    calcForgotten.textContent = forgotten;
-    var total = forgotten * cost * 12;
-    calcTotal.textContent = '\u20B9' + total.toLocaleString('en-IN');
-  }
-  subsSlider.addEventListener('input', updateCalc);
-  costSlider.addEventListener('input', updateCalc);
-  forgottenSlider.addEventListener('input', updateCalc);
-  updateCalc();
-
-  // Pricing toggle
-  var pricingToggle = document.getElementById('pricingToggle');
-  var isAnnual = false;
-  if (pricingToggle) {
-    pricingToggle.addEventListener('click', function() {
-      isAnnual = !isAnnual;
-      pricingToggle.classList.toggle('active', isAnnual);
-      document.querySelectorAll('.price-amount').forEach(function(el) {
-        var val = isAnnual ? el.dataset.annual : el.dataset.monthly;
-        el.textContent = '\u20B9' + val;
-      });
-    });
-  }
-
-  // FAQ accordion
-  document.querySelectorAll('.faq-question').forEach(function(q) {
-    q.addEventListener('click', function() {
-      var item = this.closest('.faq-item');
-      var isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(function(i) {
-        i.classList.remove('open');
-      });
-      if (!isOpen) item.classList.add('open');
-    });
-  });
-})();
+});
 </script>
 </body>
 </html>
