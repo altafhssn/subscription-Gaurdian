@@ -184,7 +184,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def home():
-    with open("static/success.html") as f:
+    with open("static/landing.html") as f:
         return f.read()
 
 
