@@ -1,8 +1,13 @@
 {
-  "version": 2,
+  "functions": {
+    "api/waitlist.js": {
+      "runtime": "@vercel/node@3"
+    }
+  },
   "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" },
-    { "src": "*.html", "use": "@vercel/static" }
+    { "src": "api/*.js", "use": "@vercel/node@3" },
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static", "continue": true }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
