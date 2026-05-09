@@ -298,11 +298,9 @@ function showToast(msg, isError) {
   setTimeout(() => { t.style.display = 'none'; }, 4000);
 }
 
-// Google button (placeholder for now)
+// Google button — redirects to Railway backend for OAuth
 document.getElementById('googleBtn').addEventListener('click', function() {
-  // In production this would go to /auth/gmail
-  // For now, redirect to index.html?connect=gmail
-  window.location.href = '/auth/gmail';
+  window.location.href = 'https://subguard.up.railway.app/auth/gmail';
 });
 
 // Email signup form
