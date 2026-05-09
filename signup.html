@@ -10,160 +10,68 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #e8ecf1;
-  color: #3a3f4a;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-}
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #fafafa; color: #1a1a2e; line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
 /* Navigation */
-nav {
-  position: sticky; top: 0; z-index: 100;
-  background: #e8ecf1;
-  box-shadow: 4px 4px 8px #c8ccd1, -4px -4px 8px #ffffff;
-}
-.nav-inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 68px;
-}
-.nav-left {
-  display: flex; align-items: center; gap: 10px;
-  text-decoration: none; color: #3a3f4a;
-  font-weight: 700; font-size: 20px;
-}
-.nav-left svg { width: 22px; height: 22px; }
-.nav-home {
-  text-decoration: none; color: #8a8f9a;
-  font-size: 15px; font-weight: 500;
-  transition: color 0.15s;
-  padding: 8px 16px; border-radius: 12px;
-  box-shadow: 3px 3px 6px #c8ccd1, -3px -3px 6px #ffffff;
-}
-.nav-home:hover { color: #3a3f4a; }
+nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid #e5e7eb; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+.nav-left { display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a2e; font-weight: 700; font-size: 20px; }
+.nav-left svg { width: 24px; height: 24px; }
+.nav-home { text-decoration: none; color: #6b7280; font-size: 15px; font-weight: 500; transition: color 0.15s; }
+.nav-home:hover { color: #1a1a2e; }
+
 /* Signup Form */
-.signup-wrapper {
-  display: flex; align-items: center; justify-content: center;
-  min-height: calc(100vh - 68px); padding: 48px 24px;
-}
-.signup-card {
-  background: #f0f3f7;
-  border-radius: 20px;
-  padding: 44px;
-  max-width: 440px;
-  width: 100%;
-  box-shadow: 8px 8px 16px #c8ccd1, -8px -8px 16px #ffffff;
-}
-.signup-icon {
-  width: 56px; height: 56px;
-  border-radius: 16px;
-  background: #e8ecf1;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 18px; font-size: 24px;
-  box-shadow: inset 3px 3px 6px #c8ccd1, inset -3px -3px 6px #ffffff;
-}
-.signup-card h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #3a3f4a; }
-.signup-card .subtitle { text-align: center; font-size: 14px; color: #8a8f9a; margin-bottom: 28px; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; font-size: 13px; font-weight: 600; color: #3a3f4a; margin-bottom: 6px; }
-.form-group input {
-  width: 100%; padding: 14px 16px;
-  border: none; border-radius: 14px;
-  font-size: 15px; font-family: inherit; color: #3a3f4a;
-  background: #e8ecf1; outline: none;
-  box-shadow: inset 4px 4px 8px #c8ccd1, inset -4px -4px 8px #ffffff;
-  transition: box-shadow 0.15s;
-}
-.form-group input:focus {
-  box-shadow: inset 5px 5px 10px #b8d1c0, inset -5px -5px 10px #ffffff;
-}
-.form-group input::placeholder { color: #8a8f9a; }
+.signup-wrapper { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 68px); padding: 48px 24px; }
+.signup-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 40px; max-width: 440px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+.signup-icon { width: 48px; height: 48px; border-radius: 12px; background: #d1fae5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 22px; }
+.signup-card h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #1a1a2e; }
+.signup-card .subtitle { text-align: center; font-size: 14px; color: #6b7280; margin-bottom: 28px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 15px; font-family: inherit; color: #1a1a2e; background: #fff; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+.form-group input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+.form-group input::placeholder { color: #9ca3af; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.submit-btn {
-  width: 100%; padding: 14px;
-  background: #e8ecf1; color: #2d9d5e;
-  border: none; border-radius: 14px;
-  font-size: 16px; font-weight: 600; font-family: inherit;
-  cursor: pointer;
-  box-shadow: 4px 4px 8px #c8ccd1, -4px -4px 8px #ffffff;
-  transition: box-shadow 0.15s, transform 0.15s;
-  margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.submit-btn:hover {
-  box-shadow: inset 3px 3px 6px #c8ccd1, inset -3px -3px 6px #ffffff;
-  transform: translateY(1px);
-}
+.submit-btn { width: 100%; padding: 14px; background: #1a1a2e; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s, transform 0.15s; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.submit-btn:hover { background: #2a2a4e; transform: translateY(-1px); }
 .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
 /* Divider */
-.divider { display: flex; align-items: center; gap: 16px; margin: 24px 0; }
-.divider::before, .divider::after {
-  content: ''; flex: 1; height: 1px;
-  background: #c8ccd1;
-}
-.divider span { font-size: 13px; color: #8a8f9a; font-weight: 500; }
+.divider { display: flex; align-items: center; gap: 16px; margin: 20px 0; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+.divider span { font-size: 13px; color: #9ca3af; font-weight: 500; }
+
 /* Google Button */
-.google-btn {
-  width: 100%; padding: 12px;
-  background: #e8ecf1;
-  border: none; border-radius: 14px;
-  font-size: 15px; font-weight: 500; font-family: inherit; color: #3a3f4a;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 4px 4px 8px #c8ccd1, -4px -4px 8px #ffffff;
-  transition: box-shadow 0.15s;
-}
-.google-btn:hover {
-  box-shadow: inset 3px 3px 6px #c8ccd1, inset -3px -3px 6px #ffffff;
-}
+.google-btn { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; font-size: 15px; font-weight: 500; font-family: inherit; color: #6b7280; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: border-color 0.15s; }
+.google-btn:hover { border-color: #d1d5db; }
+
 /* Features strip */
-.features-strip {
-  display: flex; justify-content: center; gap: 20px;
-  margin-top: 28px; flex-wrap: wrap;
-}
-.features-strip span {
-  font-size: 13px; color: #8a8f9a;
-  background: #e8ecf1;
-  padding: 6px 16px; border-radius: 12px;
-  box-shadow: inset 2px 2px 4px #c8ccd1, inset -2px -2px 4px #ffffff;
-  display: flex; align-items: center; gap: 4px;
-}
-.features-strip span::before { content: '¹3'; color: #2d9d5e; font-weight: 700; }
+.features-strip { display: flex; justify-content: center; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
+.features-strip span { font-size: 13px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
+.features-strip span::before { content: '✓'; color: #22c55e; font-weight: 700; }
+
 /* Pricing mini */
-.pricing-mini { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.pricing-mini-card {
-  background: #e8ecf1;
-  border-radius: 14px;
-  padding: 18px;
-  text-align: center;
-  box-shadow: 4px 4px 8px #c8ccd1, -4px -4px 8px #ffffff;
-}
-.pricing-mini-card.featured {
-  box-shadow: 4px 4px 8px #b8d1c0, -4px -4px 8px #ffffff;
-}
-.pricing-mini-card h4 { font-size: 14px; font-weight: 600; color: #3a3f4a; margin-bottom: 4px; }
-.pricing-mini-card .price { font-size: 20px; font-weight: 700; color: #3a3f4a; }
-.pricing-mini-card .price span { font-size: 13px; font-weight: 400; color: #8a8f9a; }
-.pricing-mini-card .desc { font-size: 12px; color: #8a8f9a; margin-top: 2px; }
+.pricing-mini { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pricing-mini-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; text-align: center; }
+.pricing-mini-card h4 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+.pricing-mini-card .price { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+.pricing-mini-card .price span { font-size: 13px; font-weight: 400; color: #9ca3af; }
+.pricing-mini-card .desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.pricing-mini-card.featured { border-color: #22c55e; }
+
 /* Toast */
-.toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-  background: #e8ecf1; color: #3a3f4a;
-  padding: 14px 24px; border-radius: 14px;
-  font-size: 14px; font-weight: 500;
-  opacity: 0; transition: all 0.3s ease; z-index: 200;
-  pointer-events: none;
-  box-shadow: 8px 8px 16px #c8ccd1, -8px -8px 16px #ffffff;
-}
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a2e; color: #fff; padding: 14px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s ease; z-index: 200; pointer-events: none; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.success { background: #e8f0ea; color: #2d9d5e; }
+.toast.success { background: #16a34a; }
+
 /* Footer */
-footer { background: #252a36; padding: 48px 0 24px; margin-top: auto; }
+footer { background: #0e0e1a; padding: 48px 0 24px; margin-top: auto; }
 .footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; text-align: center; }
 .footer-inner p { font-size: 13px; color: rgba(255,255,255,0.3); }
+
 /* Mobile */
 @media (max-width: 480px) {
-  .signup-card { padding: 28px; }
+  .signup-card { padding: 24px; }
   .form-row { grid-template-columns: 1fr; }
   .nav-inner { padding: 0 16px; }
   .signup-wrapper { padding: 24px 16px; }
@@ -176,7 +84,7 @@ footer { background: #252a36; padding: 48px 0 24px; margin-top: auto; }
 <nav>
   <div class="nav-inner">
     <a href="index.html" class="nav-left">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#2d9d5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       Guardian.
     </a>
     <a href="index.html" class="nav-home">← Back to home</a>
@@ -279,16 +187,21 @@ form.addEventListener('submit', async function(e) {
     return;
   }
 
+  // Disable button
   submitBtn.disabled = true;
   submitBtn.textContent = 'Joining the waitlist...';
 
+  // Save to localStorage fallback
   const data = { firstName, lastName, email };
   try {
     const existing = JSON.parse(localStorage.getItem('sg_waitlist') || '[]');
     existing.push({ ...data, timestamp: new Date().toISOString() });
     localStorage.setItem('sg_waitlist', JSON.stringify(existing));
-  } catch (e) {}
+  } catch (e) {
+    // localStorage may be full
+  }
 
+  // POST to /api/waitlist
   try {
     const res = await fetch('/api/waitlist', {
       method: 'POST',
@@ -297,15 +210,18 @@ form.addEventListener('submit', async function(e) {
     });
     if (!res.ok) throw new Error('Server error');
   } catch (err) {
+    // Server offline - localStorage fallback already saved
     console.log('API unavailable, saved locally');
   }
 
-  showToast('\uD83C\uDF89 You\u2019re on the list! Check your inbox.', 'success');
+  // Success
+  showToast('🎉 You\'re on the list! Check your inbox.', 'success');
   form.reset();
   submitBtn.disabled = false;
-  submitBtn.textContent = 'Join the waitlist \u2192';
+  submitBtn.textContent = 'Join the waitlist →';
 });
 
+// Google button toast
 document.getElementById('googleBtn').addEventListener('click', function() {
   showToast('Google sign-up coming soon!', '');
 });
