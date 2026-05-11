@@ -1,7 +1,9 @@
-// Netlify function — CommonJS format
-// Netlify auto-detects functions in netlify/functions/
-// Accessed via /.netlify/functions/waitlist
-// We'll redirect /api/waitlist → /.netlify/functions/waitlist via netlify.toml
+// Netlify function — Subscription Guardian waitlist
+// Stores signups to a JSON file in Netlify's /tmp (per deploy instance)
+// For production: swap in Supabase, Airtable, or Google Sheets
+
+const fs = require('fs');
+const path = require('path');
 
 exports.handler = async function(event, context) {
   const headers = {
@@ -10,6 +12,7 @@ exports.handler = async function(event, context) {
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
+  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
@@ -23,9 +26,21 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const { email, name } = JSON.parse(event.body || '{}');
+    const { email, hp_check } = JSON.parse(event.body || '{}');
 
-    if (!email || !email.includes('@')) {
+    // Honeypot — bot caught, silently succeed
+    if (hp_check) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ status: 'ok' })
+      };
+    }
+
+    const cleanEmail = (email || '').toLowerCase().trim();
+
+    // Validate email
+    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cleanEmail)) {
       return {
         statusCode: 400,
         headers,
@@ -33,11 +48,37 @@ exports.handler = async function(event, context) {
       };
     }
 
-    console.log('📝 SIGNUP:', JSON.stringify({
-      email: email.toLowerCase().trim(),
-      name: name || '',
-      time: new Date().toISOString()
-    }));
+    // Store to a JSON file (survives as long as the Netlify instance is warm)
+    // For proper persistence, connect Airtable/Supabase below
+    const DATA_FILE = path.join('/tmp', 'sg_waitlist.json');
+    let signups = [];
+    
+    try {
+      signups = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    } catch (_) {
+      // First run
+    }
+
+    // Check duplicate
+    if (signups.some(s => s.email === cleanEmail)) {
+      return {
+        statusCode: 409,
+        headers,
+        body: JSON.stringify({ error: 'Already on the list' })
+      };
+    }
+
+    // Add entry
+    signups.push({
+      email: cleanEmail,
+      timestamp: new Date().toISOString(),
+      ip_hint: (event.headers['x-forwarded-for'] || '').split(',')[0] || ''
+    });
+
+    fs.writeFileSync(DATA_FILE, JSON.stringify(signups, null, 2));
+
+    // Also log to build logs so we can see signups
+    console.log('📝 WAITLIST SIGNUP:', cleanEmail, '| Total:', signups.length);
 
     return {
       statusCode: 200,
@@ -45,10 +86,11 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ status: 'ok', message: "You're on the list!" })
     };
   } catch (err) {
+    console.error('❌ WAITLIST ERROR:', err.message);
     return {
-      statusCode: 400,
+      statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Invalid request' })
+      body: JSON.stringify({ error: 'Server error' })
     };
   }
 };
